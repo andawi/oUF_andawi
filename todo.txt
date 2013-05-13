@@ -15,3 +15,6 @@
 + add combatfader (oUF_Real)
 
 + switch pixel fonts to UTF compatible one - http://www.dafont.com/pf-arma-five.font?a=on&text=Sergath+Ju%EEcy
+
++ exclude raid settings to seperate raid.lua module
++ use dynamic variables for raid headers - http://stackoverflow.com/questions/15399281/wow-addon-lua-variables-and-methods
