@@ -1,0 +1,31 @@
+## Interface: 52000
+## Title: oUF_andawi
+## Author: andawi
+## Version: 0.9.1
+## Notes: oUF layout
+## Dependencies: oUF
+## OptionalDeps: 
+## Credits: haste, Skaarj, Freebaser, Alez, Zork, Shestak, Rainrider
+
+
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\LibMapData-1.0\library.lua
+libs\LibResInfo-1.0\LibResInfo-1.0.lua
+
+cfg.lua
+
+Plugins\oUF_Smooth.lua
+Plugins\oUF_HealPrediction.lua
+Plugins\oUF_DebuffHighlight.lua
+Plugins\oUF_AuraWatch.lua
+Plugins\oUF_Shadoworbs.lua
+Plugins\ResInfo.lua
+
+Core\functions.lua
+
+Core\range.lua
+Core\raiddebuffs.lua
+Core\tags.lua
+Core\cluster.lua
+Core\layout.lua

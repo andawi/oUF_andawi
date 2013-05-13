@@ -1,0 +1,17 @@
++ merge media directories
+
++ cleanup \Plugins\rain_healprediction
+
++ cleanup healprediction (setheight; 
+
++ fix/check tags UnitAura localization
+
++ fix tags - red @ spelltimer for DA/SS in relation to spellhaste
+
++ dynamic raid size switch (10pl / 25pl)
+
++ add Boss frames
+
++ add combatfader (oUF_Real)
+
++ switch pixel fonts to UTF compatible one - http://www.dafont.com/pf-arma-five.font?a=on&text=Sergath+Ju%EEcy
