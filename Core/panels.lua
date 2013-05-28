@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------
---    Template functions (by ShestakUI)
+--    Panel / Template functions (by ShestakUI)
 ----------------------------------------------------------------------------------------
 
 local name, ns = ...
@@ -17,48 +17,6 @@ cfg.chat.height =			112
 local backdropr, backdropg, backdropb, backdropa = unpack(cfg.media.backdrop_color)
 local borderr, borderg, borderb, bordera = unpack(cfg.media.border_color)
 
-
-
-local function CreateOverlay(f)
-  if f.overlay then return end
-
-	local overlay = f:CreateTexture("$parentOverlay", "BORDER", f)
-	overlay:SetPoint("TOPLEFT", 2, -2)
-	overlay:SetPoint("BOTTOMRIGHT", -2, 2)
-	overlay:SetTexture(cfg.media.blank)
-	overlay:SetVertexColor(0.1, 0.1, 0.1, 1)
-	f.overlay = overlay
-end
-
-local function CreateBorder(f, i, o)
-	if i then
-		if f.iborder then return end
-		local border = CreateFrame("Frame", "$parentInnerBorder", f)
-		border:SetPoint("TOPLEFT", 1, -1)
-		border:SetPoint("BOTTOMRIGHT", -1, 1)
-		border:SetBackdrop({
-			edgeFile = cfg.media.blank, edgeSize = 1,
-			insets = {left = 1, right = 1, top = 1, bottom = 1}
-		})
-		border:SetBackdropBorderColor(unpack(cfg.media.backdrop_color))
-		f.iborder = border
-	end
-
-	if o then
-		if f.oborder then return end
-		local border = CreateFrame("Frame", "$parentOuterBorder", f)
-		border:SetPoint("TOPLEFT", -1, 1)
-		border:SetPoint("BOTTOMRIGHT", 1, -1)
-		border:SetFrameLevel(f:GetFrameLevel() + 1)
-		border:SetBackdrop({
-			edgeFile = cfg.media.blank, edgeSize = 1,
-			insets = {left = 1, right = 1, top = 1, bottom = 1}
-		})
-		border:SetBackdropBorderColor(unpack(cfg.media.backdrop_color))
-		f.oborder = border
-	end
-end
-
 local function GetTemplate(t)
 	if t == "ClassColor" then
 		local c = oUF_colors.class[class]
@@ -70,30 +28,8 @@ local function GetTemplate(t)
 	end
 end
 
-local function SetTemplate(f, t)
-	GetTemplate(t)
-
-	f:SetBackdrop({
-		bgFile = cfg.media.blank, edgeFile = cfg.media.blank, edgeSize = 1,
-		insets = {left = -1, right = -1, top = -1, bottom = -1}
-	})
-
-	if t == "Transparent" then
-		backdropa = cfg.media.overlay_color[4]
-		f:CreateBorder(true, true)
-	elseif t == "Overlay" then
-		backdropa = 1
-		f:CreateOverlay()
-	else
-		backdropa = cfg.media.backdrop_color[4]
-	end
-
-	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
-	f:SetBackdropBorderColor(borderr, borderg, borderb, bordera)
-end
-
-
 local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
+	
 	GetTemplate(t)
 
 	f:SetWidth(w)
@@ -106,18 +42,7 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 		insets = {left = -1, right = -1, top = -1, bottom = -1}
 	})
 
-	if t == "Transparent" then
-		backdropa = cfg.media.overlay_color[4]
-		f:CreateBorder(true, true)
-	elseif t == "Overlay" then
-		backdropa = 1
-		f:CreateOverlay()
-	elseif t == "Invisible" then
-		backdropa = 0
-		bordera = 0
-	else
-		backdropa = cfg.media.backdrop_color[4]
-	end
+	backdropa = cfg.media.backdrop_color[4]
 
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
 	f:SetBackdropBorderColor(borderr, borderg, borderb, bordera)
