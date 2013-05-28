@@ -1,7 +1,12 @@
-
 ----------------------------------------------------------------------------------------
 --    Template functions (by ShestakUI)
 ----------------------------------------------------------------------------------------
+
+local name, ns = ...
+local cfg = ns.cfg
+local _, class = UnitClass('player')
+
+
 
 --PixelPerfect stuff
 --768 / string.match(GetCVar("gxResolution"), "%d+x(%d+)") / GetCVar("uiScale")
@@ -112,3 +117,51 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
 	f:SetBackdropBorderColor(borderr, borderg, borderb, bordera)
 end
+
+
+----------------------------------------------------------------------------------------
+-- Player line
+----------------------------------------------------------------------------------------
+local HorizontalPlayerLine = CreateFrame("Frame", "HorizontalPlayerLine", oUF_Player)
+HorizontalPlayerLine:CreatePanel("ClassColor", 228, 1, "TOPLEFT", "oUF_Player", "BOTTOMLEFT", -5, -5)
+
+local VerticalPlayerLine = CreateFrame("Frame", "VerticalPlayerLine", oUF_Player)
+VerticalPlayerLine:CreatePanel("ClassColor", 1, 98, "RIGHT", HorizontalPlayerLine, "LEFT", 0, 13)
+
+----------------------------------------------------------------------------------------
+-- Target line
+----------------------------------------------------------------------------------------
+local HorizontalTargetLine = CreateFrame("Frame", "HorizontalTargetLine", oUF_Target)
+HorizontalTargetLine:CreatePanel("ClassColor", 228, 1, "TOPRIGHT", "oUF_Target", "BOTTOMRIGHT", 5, -5)
+HorizontalTargetLine:RegisterEvent("PLAYER_TARGET_CHANGED")
+HorizontalTargetLine:SetScript("OnEvent", function(self)
+local _, class = UnitClass("target")
+local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
+if color then
+self:SetBackdropBorderColor(color.r, color.g, color.b)
+else
+self:SetBackdropBorderColor(unpack(C.media.border_color))
+end
+end)
+
+local VerticalTargetLine = CreateFrame("Frame", "VerticalTargetLine", oUF_Target)
+VerticalTargetLine:CreatePanel("ClassColor", 1, 98, "LEFT", HorizontalTargetLine, "RIGHT", 0, 13)
+VerticalTargetLine:RegisterEvent("PLAYER_TARGET_CHANGED")
+VerticalTargetLine:SetScript("OnEvent", function(self)
+local _, class = UnitClass("target")
+local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
+if color then
+self:SetBackdropBorderColor(color.r, color.g, color.b)
+else
+self:SetBackdropBorderColor(unpack(C.media.border_color))
+end
+end)
+
+----------------------------------------------------------------------------------------
+-- Bottom line
+----------------------------------------------------------------------------------------
+local bottompanel = CreateFrame("Frame", "BottomPanel", UIParent)
+bottompanel:CreatePanel("ClassColor", 1, 1, "BOTTOM", UIParent, "BOTTOM", 0, 20)
+bottompanel:SetPoint("LEFT", UIParent, "LEFT", 21, 0)
+bottompanel:SetPoint("RIGHT", UIParent, "RIGHT", -21, 0)
+
