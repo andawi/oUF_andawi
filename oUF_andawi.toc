@@ -1,7 +1,7 @@
-## Interface: 52000
+## Interface: 50300
 ## Title: oUF_andawi
 ## Author: andawi
-## Version: 0.9.1
+## Version: 0.9.2
 ## Notes: oUF layout
 ## Dependencies: oUF
 ## OptionalDeps: 
@@ -23,9 +23,10 @@ Plugins\oUF_Shadoworbs.lua
 Plugins\ResInfo.lua
 
 Core\functions.lua
-
 Core\range.lua
 Core\raiddebuffs.lua
 Core\tags.lua
 Core\cluster.lua
+Core\panels.lua
+Core\raid.lua
 Core\layout.lua
