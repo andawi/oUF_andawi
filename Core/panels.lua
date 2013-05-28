@@ -8,11 +8,11 @@ local _, class = UnitClass('player')
 
 local oUF = ns.oUF
 
-cfg.media.blank = 				"Interface\AddOns\ShestakUI\Media\Textures\White.tga"			-- Texture for borders
+cfg.media.blank = 			"Interface\AddOns\ShestakUI\Media\Textures\White.tga"			-- Texture for borders
 cfg.media.backdrop_color = 		{0, 0, 0, 1}													-- Color for borders backdrop
 cfg.media.border_color = 		{0.37, 0.3, 0.3, 1}												-- Color for borders
 cfg.media.overlay_color =		{0, 0, 0, 0.7}
-cfg.chat.height =				112
+cfg.chat.height =			112
 
 local backdropr, backdropg, backdropb, backdropa = unpack(cfg.media.backdrop_color)
 local borderr, borderg, borderb, bordera = unpack(cfg.media.border_color)
