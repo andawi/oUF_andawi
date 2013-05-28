@@ -150,7 +150,7 @@ local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
 if color then
 self:SetBackdropBorderColor(color.r, color.g, color.b)
 else
-self:SetBackdropBorderColor(unpack(C.media.border_color))
+self:SetBackdropBorderColor(unpack(cfg.media.border_color))
 end
 end)
 
@@ -163,7 +163,7 @@ local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
 if color then
 self:SetBackdropBorderColor(color.r, color.g, color.b)
 else
-self:SetBackdropBorderColor(unpack(C.media.border_color))
+self:SetBackdropBorderColor(unpack(cfg.media.border_color))
 end
 end)
 
