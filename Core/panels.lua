@@ -6,6 +6,16 @@ local name, ns = ...
 local cfg = ns.cfg
 local _, class = UnitClass('player')
 
+local oUF = ns.oUF
+
+cfg.media.blank = 				"Interface\AddOns\ShestakUI\Media\Textures\White.tga"			-- Texture for borders
+cfg.media.backdrop_color = 		{0, 0, 0, 1}													-- Color for borders backdrop
+cfg.media.border_color = 		{0.37, 0.3, 0.3, 1}												-- Color for borders
+cfg.media.overlay_color =		{0, 0, 0, 0.7}
+cfg.chat.height =				112
+
+local backdropr, backdropg, backdropb, backdropa = unpack(cfg.media.backdrop_color)
+local borderr, borderg, borderb, bordera = unpack(cfg.media.border_color)
 
 
 --PixelPerfect stuff
@@ -20,7 +30,7 @@ local function CreateOverlay(f)
 	local overlay = f:CreateTexture("$parentOverlay", "BORDER", f)
 	overlay:SetPoint("TOPLEFT", 2, -2)
 	overlay:SetPoint("BOTTOMRIGHT", -2, 2)
-	overlay:SetTexture(C.media.blank)
+	overlay:SetTexture(cfg.media.blank)
 	overlay:SetVertexColor(0.1, 0.1, 0.1, 1)
 	f.overlay = overlay
 end
@@ -32,10 +42,10 @@ local function CreateBorder(f, i, o)
 		border:SetPoint("TOPLEFT", mult, -mult)
 		border:SetPoint("BOTTOMRIGHT", -mult, mult)
 		border:SetBackdrop({
-			edgeFile = C.media.blank, edgeSize = mult,
+			edgeFile = cfg.media.blank, edgeSize = mult,
 			insets = {left = mult, right = mult, top = mult, bottom = mult}
 		})
-		border:SetBackdropBorderColor(unpack(C.media.backdrop_color))
+		border:SetBackdropBorderColor(unpack(cfg.media.backdrop_color))
 		f.iborder = border
 	end
 
@@ -46,22 +56,22 @@ local function CreateBorder(f, i, o)
 		border:SetPoint("BOTTOMRIGHT", mult, -mult)
 		border:SetFrameLevel(f:GetFrameLevel() + 1)
 		border:SetBackdrop({
-			edgeFile = C.media.blank, edgeSize = mult,
+			edgeFile = cfg.media.blank, edgeSize = mult,
 			insets = {left = mult, right = mult, top = mult, bottom = mult}
 		})
-		border:SetBackdropBorderColor(unpack(C.media.backdrop_color))
+		border:SetBackdropBorderColor(unpack(cfg.media.backdrop_color))
 		f.oborder = border
 	end
 end
 
 local function GetTemplate(t)
 	if t == "ClassColor" then
-		local c = T.oUF_colors.class[T.class]
+		local c = oUF_colors.class[class]
 		borderr, borderg, borderb, bordera = c[1], c[2], c[3], c[4]
-		backdropr, backdropg, backdropb, backdropa = unpack(C.media.backdrop_color)
+		backdropr, backdropg, backdropb, backdropa = unpack(cfg.media.backdrop_color)
 	else
-		borderr, borderg, borderb, bordera = unpack(C.media.border_color)
-		backdropr, backdropg, backdropb, backdropa = unpack(C.media.backdrop_color)
+		borderr, borderg, borderb, bordera = unpack(cfg.media.border_color)
+		backdropr, backdropg, backdropb, backdropa = unpack(cfg.media.backdrop_color)
 	end
 end
 
@@ -69,18 +79,18 @@ local function SetTemplate(f, t)
 	GetTemplate(t)
 
 	f:SetBackdrop({
-		bgFile = C.media.blank, edgeFile = C.media.blank, edgeSize = mult,
+		bgFile = cfg.media.blank, edgeFile = cfg.media.blank, edgeSize = mult,
 		insets = {left = -mult, right = -mult, top = -mult, bottom = -mult}
 	})
 
 	if t == "Transparent" then
-		backdropa = C.media.overlay_color[4]
+		backdropa = cfg.media.overlay_color[4]
 		f:CreateBorder(true, true)
 	elseif t == "Overlay" then
 		backdropa = 1
 		f:CreateOverlay()
 	else
-		backdropa = C.media.backdrop_color[4]
+		backdropa = cfg.media.backdrop_color[4]
 	end
 
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
@@ -97,12 +107,12 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	f:SetFrameStrata("BACKGROUND")
 	f:SetPoint(a1, p, a2, x, y)
 	f:SetBackdrop({
-		bgFile = C.media.blank, edgeFile = C.media.blank, edgeSize = mult,
+		bgFile = cfg.media.blank, edgeFile = cfg.media.blank, edgeSize = mult,
 		insets = {left = -mult, right = -mult, top = -mult, bottom = -mult}
 	})
 
 	if t == "Transparent" then
-		backdropa = C.media.overlay_color[4]
+		backdropa = cfg.media.overlay_color[4]
 		f:CreateBorder(true, true)
 	elseif t == "Overlay" then
 		backdropa = 1
@@ -111,7 +121,7 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 		backdropa = 0
 		bordera = 0
 	else
-		backdropa = C.media.backdrop_color[4]
+		backdropa = cfg.media.backdrop_color[4]
 	end
 
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
@@ -165,3 +175,8 @@ bottompanel:CreatePanel("ClassColor", 1, 1, "BOTTOM", UIParent, "BOTTOM", 0, 20)
 bottompanel:SetPoint("LEFT", UIParent, "LEFT", 21, 0)
 bottompanel:SetPoint("RIGHT", UIParent, "RIGHT", -21, 0)
 
+----------------------------------------------------------------------------------------
+-- Left line
+----------------------------------------------------------------------------------------
+local leftpanel = CreateFrame("Frame", "LeftPanel", UIParent)
+leftpanel:CreatePanel("ClassColor", 1, cfg.chat.height - 2, "BOTTOMLEFT", bottompanel, "LEFT", 0, 0)
