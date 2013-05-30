@@ -2,7 +2,6 @@ local name, ns = ...
 local cfg = ns.cfg
 local _, class = UnitClass('player')
 
-
 local raidgrp1, raidgrp2, raidgrp3, raidgrp4, raidgrp5
 
 local backdrop = {
@@ -606,7 +605,7 @@ local UnitSpecific = {
 	
 	    if cfg.healcomm then Healcomm(self) end
 		
-		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
+		local name = fs(self.Health, "OVERLAY", cfg.font, 8, cfg.fontflag, 1, 1, 1)
         name:SetPoint("LEFT", self.Health, 4, 0)
         name:SetJustifyH"LEFT"
 		if cfg.class_colorbars then
@@ -628,7 +627,7 @@ local UnitSpecific = {
 			d.size = 38
 			d.spacing = 4
 			d.num = cfg.player_debuffs_num 
-            d:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", -8, 0)
+            d:SetPoint("RIGHT", self, "LEFT", -20, 25)
 			d:SetSize(cfg.width, d.size)
             d.initialAnchor = "BOTTOMRIGHT"
             d["growth-x"] = "LEFT"
@@ -820,7 +819,7 @@ local UnitSpecific = {
 			b.spacing = 4
 		    b.num = cfg.target_buffs_num
             b:SetSize(b.size*4+b.spacing*3, b.size)
-		    b:SetPoint("TOPLEFT", self, "TOPRIGHT", 5, 0)
+		    b:SetPoint("TOPLEFT", self, "TOPRIGHT", 20, 25)
             b.initialAnchor = "TOPLEFT" 
             b["growth-y"] = "DOWN"
             b.PostCreateIcon = auraIcon
@@ -980,7 +979,8 @@ local UnitSpecific = {
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 10)
 		 
 		if cfg.healcomm then  AddHealPredictionBar(self) end 
-		 
+		
+--[[		
         if cfg.auras then 
             local d = CreateFrame("Frame", nil, self)
 			d.size = 24
@@ -993,6 +993,7 @@ local UnitSpecific = {
             d.PostUpdateIcon = PostUpdateIcon
             self.Debuffs = d
         end
+]]
     end,
 	
 	raid = function(self, ...)
@@ -1154,114 +1155,8 @@ oUF:Factory(function(self)
     spawnHelper(self, "focus", "CENTER", cfg.unit_positions.Focus.x, cfg.unit_positions.Focus.y)
     spawnHelper(self, "focustarget", "LEFT", "oUF_andawiFocus", cfg.unit_positions.Focustarget.x, cfg.unit_positions.Focustarget.y)
     spawnHelper(self, "pet", "LEFT", "oUF_andawiPlayer", cfg.unit_positions.Pet.x, cfg.unit_positions.Pet.y)
-
-    if cfg.disableRaidFrameManager then
-	    CompactRaidFrameManager:UnregisterAllEvents()
-        CompactRaidFrameManager:HookScript("OnShow", function(s) s:Hide() end)
-        CompactRaidFrameManager:Hide()
-    
-        CompactRaidFrameContainer:UnregisterAllEvents()
-        CompactRaidFrameContainer:HookScript("OnShow", function(s) s:Hide() end)
-        CompactRaidFrameContainer:Hide()
-    end 
-	
-	if cfg.raid then
-	
-		self:SetActiveStyle'andawi - Raid'
-
-		raidgrp1 = oUF:SpawnHeader(nil, nil, "raid,party,solo",
-		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
-		'showPlayer', true,
-		'showSolo', false,
-		'showParty', true,
-		'showRaid', true,
-		'xoffset', 5,
-		'yOffset', -15,
-		'point', "LEFT",
-		'groupFilter', 1,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
-		'maxColumns', 8,
-		'unitsPerColumn', 5,
-		'columnSpacing', 5,
-		'columnAnchorPoint', "TOP")
-
-
-		raidgrp2 = oUF:SpawnHeader(nil, nil, "raid",
-		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
-		'showPlayer', true,
-		'showSolo', false,
-		'showParty', false,
-		'showRaid', true,
-		'xoffset', 5,
-		'yOffset', -15,
-		'point', "LEFT",
-		'groupFilter', 2,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
-		'maxColumns', 8,
-		'unitsPerColumn', 5,
-		'columnSpacing', 5,
-		'columnAnchorPoint', "TOP")
-
-		raidgrp3 = oUF:SpawnHeader(nil, nil, "raid",
-		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
-		'showPlayer', true,
-		'showSolo', false,
-		'showParty', false,
-		'showRaid', true,
-		'xoffset', 5,
-		'yOffset', -15,
-		'point', "LEFT",
-		'groupFilter', 3,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
-		'maxColumns', 8,
-		'unitsPerColumn', 5,
-		'columnSpacing', 5,
-		'columnAnchorPoint', "TOP")
-		
-		raidgrp4 = oUF:SpawnHeader(nil, nil, "raid",
-		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
-		'showPlayer', true,
-		'showSolo', false,
-		'showParty', false,
-		'showRaid', true,
-		'xoffset', 5,
-		'yOffset', -15,
-		'point', "LEFT",
-		'groupFilter', 4,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
-		'maxColumns', 8,
-		'unitsPerColumn', 5,
-		'columnSpacing', 5,
-		'columnAnchorPoint', "TOP")
-
-		raidgrp5 = oUF:SpawnHeader(nil, nil, "raid",
-		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
-		'showPlayer', true,
-		'showSolo', false,
-		'showParty', false,
-		'showRaid', true,
-		'xoffset', 5,
-		'yOffset', -15,
-		'point', "LEFT",
-		'groupFilter', 5,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
-		'maxColumns', 8,
-		'unitsPerColumn', 5,
-		'columnSpacing', 5,
-		'columnAnchorPoint', "TOP")
-
-		--else
-		raidgrp1:SetPoint("CENTER", UIParent, "CENTER", cfg.unit_positions.Raid.x, cfg.unit_positions.Raid.y)			
-		raidgrp2:SetPoint('TOP', raidgrp1, 'BOTTOM', 0, -10)
-		raidgrp3:SetPoint('TOP', raidgrp2, 'BOTTOM', 0, -10)
-		raidgrp4:SetPoint('TOP', raidgrp3, 'BOTTOM', 0, -10)
-		raidgrp5:SetPoint('TOP', raidgrp4, 'BOTTOM', 0, -10)
-	end
+print ('spawn done')
+   
 end)
 
 

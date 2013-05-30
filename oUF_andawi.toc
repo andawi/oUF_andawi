@@ -27,6 +27,7 @@ Core\range.lua
 Core\raiddebuffs.lua
 Core\tags.lua
 Core\cluster.lua
-Core\panels.lua
+
 Core\raid.lua
 Core\layout.lua
+Core\panels.lua

@@ -1,6 +1,6 @@
  local addon, ns = ...
  local cfg = CreateFrame("Frame")
-
+ 
   -----------------------------
   -- Media
   -----------------------------
@@ -8,7 +8,7 @@
 local mediaPath = "Interface\\AddOns\\Media\\"
 local mediaPathN = "Interface\\AddOns\\oUF_andawi\\media\\"
 cfg.texture = mediaPath.."texture"
-cfg.font, cfg.fontsize, cfg.shadowoffsetX, cfg.shadowoffsetY, cfg.fontflag = mediaPath.."pixel.ttf", 8, 0, 0,  "Outlinemonochrome" -- "" for none THINOUTLINE Outlinemonochrome
+cfg.font, cfg.fontsize, cfg.shadowoffsetX, cfg.shadowoffsetY, cfg.fontflag = mediaPathN.."pixel.ttf", 8, 0, 0,  "Outlinemonochrome" -- "" for none THINOUTLINE Outlinemonochrome
 cfg.fontB = mediaPathN.."ROADWAY.ttf"
 cfg.symbol = mediaPath.."symbol.ttf"
 cfg.buttonTex = mediaPath.."gloss"
@@ -25,7 +25,7 @@ cfg.highlightBorder = mediaPathN..'highlightBorder'
 cfg.scale = 1  
 
 -- raid == party frames
-cfg.raid = true	
+cfg.raid = true
   
 --player, target, focus 
 cfg.width = 250 
@@ -54,8 +54,8 @@ cfg.AltPowerBar_Height = 12
 -- Unit Frames Positions
 
  cfg.unit_positions = {
-             Player = { x= -450, y= -60},  
-             Target = { x=	450, y= -60},  
+             Player = { x= -450, y= 0},  
+             Target = { x=	450, y= 0},  
        Targettarget = { x=    0, y=  -65},  
               Focus = { x= -260, y=  100},  
         Focustarget = { x=    0, y=  -65},  
@@ -74,7 +74,7 @@ cfg.disableCooldown = false -- hide Cooldown Spiral
 cfg.aura_font, cfg.aura_fontsize, cfg.aura_fontflag = mediaPath.."pixel.ttf", 8, "Outlinemonochrome" 
 cfg.player_debuffs_num = 18
 cfg.target_debuffs_num = 18
-cfg.target_buffs_num = 8
+cfg.target_buffs_num = 12
 
   -----------------------------
   -- Plugins 
