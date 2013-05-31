@@ -16,8 +16,10 @@
 
 + switch pixel fonts to UTF compatible one - http://www.dafont.com/pf-arma-five.font?a=on&text=Sergath+Ju%EEcy
 
+  http://www.dafont.com/fixed-v01.font?fpp=50&a=on&sort=alpha&text=Ju%EEcy
+  http://www.dafont.com/victors-pixel-font.font?fpp=50&a=on&sort=alpha&text=Ju%EEcy
   http://www.dafont.com/pxl.font?text=Sergath&fpp=50&a=on&back=bitmap
-
+  http://www.dafont.com/visitor.font?fpp=50&a=on&psize=xs
 
 + exclude raid settings to seperate raid.lua module
 + use dynamic variables for raid headers - http://stackoverflow.com/questions/15399281/wow-addon-lua-variables-and-methods
