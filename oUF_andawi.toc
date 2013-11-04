@@ -30,4 +30,3 @@ Core\cluster.lua
 
 Core\raid.lua
 Core\layout.lua
-Core\panels.lua

@@ -60,7 +60,7 @@ local updatePos = function(self, elapsed)
     if(timer >= update) then
 	
 
-	for rgroup=1, 2 do		--check for GRP 1 & GRP 2
+	for rgroup=1, 5 do		--check for GRP 1 & GRP 2
         for id, _ in next, units do
             if validUnit(id) and units[id].grp == rgroup then 
                 local x, y = GetPlayerMapPosition(id)
@@ -170,8 +170,8 @@ local Enable = function(self)
         update = 200 / 1000
         healrange = 30
 
-        local oUF_andawiCluster = fs(self.Health, "OVERLAY", cfg.font, 8, cfg.fontflag, 1, 1, 1)
-        oUF_andawiCluster:SetPoint("TOPRIGHT", 1, -1)
+        local oUF_andawiCluster = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8, cfg.fontflag, 1, 1, 1)
+        oUF_andawiCluster:SetPoint("TOPRIGHT", -1, -2)
         oUF_andawiCluster:SetJustifyH("RIGHT")
         self.oUF_andawiCluster = oUF_andawiCluster
 		self.oUF_andawiCluster.frequentUpdates = update

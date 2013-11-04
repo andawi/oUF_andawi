@@ -95,50 +95,6 @@ local RaidSizeSwitcher = function(self)
 	end
 end
 
-
-local dropdown = CreateFrame('Frame', name .. 'DropDown', UIParent, 'UIDropDownMenuTemplate')
-
-local function menu(self)
-	dropdown:SetParent(self)
-	return ToggleDropDownMenu(1, nil, dropdown, self:GetName(), -3, 0)
-end
-
-local init = function(self)
-	local unit = self:GetParent().unit
-	local menu, name, id
-
-	if(not unit) then
-		return
-	end
-
-	if(UnitIsUnit(unit, "player")) then
-		menu = "SELF"
-    elseif(UnitIsUnit(unit, "vehicle")) then
-		menu = "VEHICLE"
-	elseif(UnitIsUnit(unit, "pet")) then
-		menu = "PET"
-	elseif(UnitIsPlayer(unit)) then
-		id = UnitInRaid(unit)
-		if(id) then
-			menu = "RAID_PLAYER"
-			name = GetRaidRosterInfo(id)
-		elseif(UnitInParty(unit)) then
-			menu = "PARTY"
-		else
-			menu = "PLAYER"
-		end
-	else
-		menu = "TARGET"
-		name = RAID_TARGET_ICON
-	end
-
-	if(menu) then
-		UnitPopup_ShowMenu(self, menu, unit, name, id)
-	end
-end
-
-UIDropDownMenu_Initialize(dropdown, init, 'MENU')
-
 local GetTime = GetTime
 local floor, fmod = floor, math.fmod
 local day, hour, minute = 86400, 3600, 60
@@ -434,8 +390,8 @@ local AddHealPredictionBar = function(self)
 	self.RainHealPrediction = {
 	myBar = mhpb,
 	otherBar = ohpb,
-	absorbBar = absorb,
-	overAbsorbGlow = overAbsorb,
+	--absorbBar = absorb,
+	--overAbsorbGlow = overAbsorb,
 	maxOverflow = 1.25
 	}
 end
@@ -469,7 +425,6 @@ local Shared = function(self, unit)
 
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
-    self:RegisterForClicks"AnyUp"
 	
     self.framebd = framebd(self, self)		--extra Frame Backdrop...
 	
@@ -594,8 +549,6 @@ local UnitSpecific = {
     player = function(self, ...)
         Shared(self, ...)
 		
-		self.menu = menu
-		
 		self:SetSize(cfg.width, cfg.health_height+cfg.power_height+1)
 		self.Health:SetHeight(cfg.health_height)
 		self.Power:SetHeight(cfg.power_height)
@@ -605,7 +558,7 @@ local UnitSpecific = {
 	
 	    if cfg.healcomm then Healcomm(self) end
 		
-		local name = fs(self.Health, "OVERLAY", cfg.font, 8, cfg.fontflag, 1, 1, 1)
+		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         name:SetPoint("LEFT", self.Health, 4, 0)
         name:SetJustifyH"LEFT"
 		if cfg.class_colorbars then
@@ -787,8 +740,6 @@ local UnitSpecific = {
 
 		Shared(self, ...)
 		
-		self.menu = menu
-		
 		self:SetSize(cfg.width, cfg.health_height+cfg.power_height+1)
 		self.Health:SetHeight(cfg.health_height)
 		self.Power:SetHeight(cfg.power_height)
@@ -916,7 +867,7 @@ local UnitSpecific = {
 		self.RaidIcon:SetSize(23, 23)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 11)
 		
-        if cfg.auras then 
+        --[[if cfg.auras then 
             local a = CreateFrame("Frame", nil, self)
 			a.size = 24
 			a.spacing = 4
@@ -928,7 +879,7 @@ local UnitSpecific = {
             a.PostCreateIcon = auraIcon
             a.PostUpdateIcon = PostUpdateIcon
             self.Auras = a
-        end
+        end]]
     end,
 
     pet = function(self, ...)
@@ -994,133 +945,7 @@ local UnitSpecific = {
             self.Debuffs = d
         end
 ]]
-    end,
-	
-	raid = function(self, ...)
-		Shared(self, ...)
-		
-		self.Health:ClearAllPoints()
-		self.Power:ClearAllPoints()
-		
-		self.Health:SetHeight(cfg.raid_health_height)
-		self.Power:SetHeight(cfg.raid_power_height)
-
-		self.Power:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 1, 0) 
-		self.Power:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -1, 0)
-		
-		self.Health:SetPoint('BOTTOMLEFT', self.Power, 1, cfg.raid_power_height+1)
-		self.Health:SetPoint('BOTTOMRIGHT', self.Power, -1, cfg.raid_power_height+1)
-		self.Health:SetHeight(cfg.raid_health_height/2)
-		
-		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.15, 0.15, 0.15}
-		self.Health.colorSmooth = true
-		self.Health.colorDisconnected = true
-		
-		self.DebuffHighlight = self.Health:CreateTexture(nil, 'OVERLAY')
-		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(cfg.highlightBorder)
-		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		self.DebuffHighlight:SetBlendMode('ADD')
-		self.DebuffHighlightAlpha = 1
-		
-		
-		if class == "PRIEST" then
-		
-		-- Divine Aegis Shield Value
-			self.AuraStatusDA = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-			self.AuraStatusDA:ClearAllPoints()
-			self.AuraStatusDA:SetPoint("TOPRIGHT",-8, -2)
-			self.AuraStatusDA.frequentUpdates = 0.1
-			self.AuraStatusDA:SetAlpha(.6)
-			self:Tag(self.AuraStatusDA, "[oUF_andawi:DA]")
-		
-		-- Spirit Shell Shield Value
-			self.AuraStatusSS = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-			self.AuraStatusSS:ClearAllPoints()
-			self.AuraStatusSS:SetPoint("BOTTOMRIGHT",-8, 0)
-			self.AuraStatusSS.frequentUpdates = 0.1
-			self.AuraStatusSS:SetAlpha(.6)
-			self:Tag(self.AuraStatusSS, "[oUF_andawi:SS]")
-		
-		-- Power Word Fortitude Indicator
-			self.AuraStatusPWF = self.Health:CreateFontString(nil, "OVERLAY")
-			self.AuraStatusPWF:SetPoint("BOTTOMRIGHT", 2, 1)
-			self.AuraStatusPWF:SetJustifyH("RIGHT")
-			self.AuraStatusPWF:SetFont(cfg.squares, 10, "OUTLINE")
-			self:Tag(self.AuraStatusPWF, "[oUF_andawi:fort]")
-
-		end
-
-			
-		local name = fs(self.Health, "OVERLAY", cfg.fontB, 13)
-		name:SetPoint("TOPLEFT", self.Health, 3, -4)
-	    name:SetJustifyH"LEFT"
-		name:SetShadowColor(0, 0, 0)
-		name:SetShadowOffset(1, -1)
-		if cfg.class_colorbars then
-	        self:Tag(name, '[veryshort:name]')
-		else
-		    self:Tag(name, '[oUF_andawi:color][veryshort:name]')
-		end
-
-        local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-        htext:SetPoint("RIGHT", self.Health, 0, -8)
-		--htext.frequentUpdates = true
-        self:Tag(htext, '[oUF_andawi:info]')		
-		
-		local lfd = fs(self.Health, "OVERLAY", cfg.symbol, 8, "", 1, 1, 1)
-		lfd:SetPoint("TOPLEFT", 27, -4)
-	    self:Tag(lfd, '[oUF_andawi:LFD]')	
-
-		self.RaidIcon:SetSize(20, 20)
-	    self.RaidIcon:SetPoint("TOP", self.Health, 2, 7)
-		
-		if cfg.healcomm then  AddHealPredictionBar(self) end
-		
-		--Resurrect(self)
-		PhanxResurrect(self)
-		createAuraWatch(self)
-
-		local debuffs = CreateFrame("Frame", nil, self)
-			debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 4, 3)
-			debuffs:SetFrameStrata('TOOLTIP')
-			debuffs.initialAnchor = "RIGHT"
-			debuffs["growth-x"] = "LEFT"
-			debuffs:SetHeight(18)
-			debuffs:SetWidth(5 * 20)
-			debuffs.num = 5
-			debuffs.spacing = 1
-			debuffs.size = 18
-			debuffs.CustomFilter = CustomDebuffFilter
-			debuffs.PostCreateIcon = auraIcon
-            debuffs.PostUpdateIcon = PostUpdateIcon
-		self.Debuffs = debuffs
-		
-		local tborder = CreateFrame("Frame", nil, self)
-        tborder:SetPoint("TOPLEFT", self, "TOPLEFT")
-        tborder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
-        tborder:SetBackdrop(backdrop_1px)
-        tborder:SetBackdropColor(.8, .8, .8, 1)
-        tborder:SetFrameLevel(1)
-        tborder:Hide()
-        self.TargetBorder = tborder
-		
-		local fborder = CreateFrame("Frame", nil, self)
-        fborder:SetPoint("TOPLEFT", self, "TOPLEFT")
-        fborder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
-        fborder:SetBackdrop(backdrop_1px)
-        fborder:SetBackdropColor(.6, .8, 0, 1)
-        fborder:SetFrameLevel(1)
-        fborder:Hide()
-        self.FocusHighlight = fborder
-	    
-		self:RegisterEvent('GROUP_ROSTER_UPDATE', RaidSizeSwitcher)
-		self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
-        self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
-		self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
-        self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
-		
-    end,
+    end
 }
 
 UnitSpecific.focustarget = UnitSpecific.pet
@@ -1153,36 +978,9 @@ oUF:Factory(function(self)
     spawnHelper(self, "target", "CENTER", cfg.unit_positions.Target.x, cfg.unit_positions.Target.y)
     spawnHelper(self, "targettarget", "RIGHT", "oUF_andawiTarget", cfg.unit_positions.Targettarget.x, cfg.unit_positions.Targettarget.y)
     spawnHelper(self, "focus", "CENTER", cfg.unit_positions.Focus.x, cfg.unit_positions.Focus.y)
-    spawnHelper(self, "focustarget", "LEFT", "oUF_andawiFocus", cfg.unit_positions.Focustarget.x, cfg.unit_positions.Focustarget.y)
+    --spawnHelper(self, "focustarget", "LEFT", "oUF_andawiFocus", cfg.unit_positions.Focustarget.x, cfg.unit_positions.Focustarget.y)
     spawnHelper(self, "pet", "LEFT", "oUF_andawiPlayer", cfg.unit_positions.Pet.x, cfg.unit_positions.Pet.y)
 print ('spawn done')
    
 end)
 
-
-local WatchDog = CreateFrame("Frame")
-WatchDog:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-WatchDog:RegisterEvent('PLAYER_REGEN_DISABLED')
-WatchDog:RegisterEvent('PLAYER_REGEN_ENABLED')
---WatchDog:RegisterEvent('GROUP_ROSTER_UPDATE')
---WatchDog:RegisterEvent("ADDON_LOADED")
-
-WatchDog:SetScript("OnEvent", function(self, event)
-	
-	--print("WatchDog")
-	if event=='ACTIVE_TALENT_GROUP_CHANGED' then
-		local id, name, description, icon, background, role = GetSpecializationInfo(GetSpecialization())
-		if role == 'HEALER' then
-			print('oUF RAIDFRAMES enabled --> reload UI')
-			cfg.disableRaidFrameManager = true
-			cfg.raid = true
-		else
-			print('oUF RAIDFRAMES disabled --> reload UI')
-			cfg.disableRaidFrameManager = false
-			cfg.raid = false
-		end
-	elseif event=='GROUP_ROSTER_UPDATE' then
-		print('WatchDog GROUP_ROSTER_UPDATE')
-	
-	end
-end)

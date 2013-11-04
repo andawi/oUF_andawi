@@ -80,56 +80,26 @@ local RaidSizeSwitcher = function(self)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
 		
-		raidgrp1:SetScale(0.9)
-		raidgrp2:SetScale(0.9)
-		raidgrp3:SetScale(0.9)
-		raidgrp4:SetScale(0.9)
-		raidgrp5:SetScale(0.9)
+		raidgrp1:SetScale(1)
+		raidgrp2:SetScale(1)
+		raidgrp3:SetScale(1)
+		raidgrp4:SetScale(1)
+		raidgrp5:SetScale(1)
+	else 
+		raidgrp1:SetAttribute("showRaid", true)
+		raidgrp2:SetAttribute("showRaid", true)
+		raidgrp3:SetAttribute("showRaid", true)
+		raidgrp4:SetAttribute("showRaid", true)
+		raidgrp5:SetAttribute("showRaid", true)
+		
+		raidgrp1:SetScale(1)
+		raidgrp2:SetScale(1)
+		raidgrp3:SetScale(1)
+		raidgrp4:SetScale(1)
+		raidgrp5:SetScale(1)
 	end
 end
 
-local dropdown = CreateFrame('Frame', name .. 'DropDown', UIParent, 'UIDropDownMenuTemplate')
-
-local function menu(self)
-	dropdown:SetParent(self)
-	return ToggleDropDownMenu(1, nil, dropdown, self:GetName(), -3, 0)
-end
-
-local init = function(self)
-	local unit = self:GetParent().unit
-	local menu, name, id
-
-	if(not unit) then
-		return
-	end
-
-	if(UnitIsUnit(unit, "player")) then
-		menu = "SELF"
-    elseif(UnitIsUnit(unit, "vehicle")) then
-		menu = "VEHICLE"
-	elseif(UnitIsUnit(unit, "pet")) then
-		menu = "PET"
-	elseif(UnitIsPlayer(unit)) then
-		id = UnitInRaid(unit)
-		if(id) then
-			menu = "RAID_PLAYER"
-			name = GetRaidRosterInfo(id)
-		elseif(UnitInParty(unit)) then
-			menu = "PARTY"
-		else
-			menu = "PLAYER"
-		end
-	else
-		menu = "TARGET"
-		name = RAID_TARGET_ICON
-	end
-
-	if(menu) then
-		UnitPopup_ShowMenu(self, menu, unit, name, id)
-	end
-end
-
-UIDropDownMenu_Initialize(dropdown, init, 'MENU')
 
 local auraIcon = function(auras, button)
     local c = button.count
@@ -374,9 +344,9 @@ local AddHealPredictionBar = function(self)
 	self.RainHealPrediction = {
 	myBar = mhpb,
 	otherBar = ohpb,
-	absorbBar = absorb,
-	overAbsorbGlow = overAbsorb,
-	maxOverflow = 1.25
+	--absorbBar = absorb,
+	--overAbsorbGlow = overAbsorb,
+	maxOverflow = 1.33
 	}
 end
 
@@ -388,7 +358,6 @@ local raid_heal = function(self, unit)
 
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
-    self:RegisterForClicks"AnyUp"
 	
     self.framebd = framebd(self, self)		--extra Frame Backdrop...
 	
@@ -533,24 +502,24 @@ local raid_heal = function(self, unit)
 		if class == "PRIEST" then
 		
 		-- Divine Aegis Shield Value
-			self.AuraStatusDA = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
+			self.AuraStatusDA = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusDA:ClearAllPoints()
-			self.AuraStatusDA:SetPoint("TOPRIGHT",-8, -2)
+			self.AuraStatusDA:SetPoint("TOPRIGHT",-12, -2)
 			self.AuraStatusDA.frequentUpdates = 0.1
 			self.AuraStatusDA:SetAlpha(.6)
 			self:Tag(self.AuraStatusDA, "[oUF_andawi:DA]")
 		
 		-- Spirit Shell Shield Value
-			self.AuraStatusSS = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
+			self.AuraStatusSS = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusSS:ClearAllPoints()
-			self.AuraStatusSS:SetPoint("BOTTOMRIGHT",-8, 0)
+			self.AuraStatusSS:SetPoint("BOTTOMRIGHT", -10, 0)
 			self.AuraStatusSS.frequentUpdates = 0.1
 			self.AuraStatusSS:SetAlpha(.6)
 			self:Tag(self.AuraStatusSS, "[oUF_andawi:SS]")
 		
 		-- Power Word Fortitude Indicator
 			self.AuraStatusPWF = self.Health:CreateFontString(nil, "OVERLAY")
-			self.AuraStatusPWF:SetPoint("BOTTOMRIGHT", 2, 1)
+			self.AuraStatusPWF:SetPoint("BOTTOMRIGHT", -0, 1)
 			self.AuraStatusPWF:SetJustifyH("RIGHT")
 			self.AuraStatusPWF:SetFont(cfg.squares, 10, "OUTLINE")
 			self:Tag(self.AuraStatusPWF, "[oUF_andawi:fort]")
@@ -558,7 +527,7 @@ local raid_heal = function(self, unit)
 		end
 
 			
-		local name = fs(self.Health, "OVERLAY", cfg.fontB, 13)
+		local name = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8)
 		name:SetPoint("TOPLEFT", self.Health, 3, -4)
 	    name:SetJustifyH"LEFT"
 		name:SetShadowColor(0, 0, 0)
@@ -758,11 +727,11 @@ WatchDog:SetScript("OnEvent", function(self, event)
 		local id, name, description, icon, background, role = GetSpecializationInfo(GetSpecialization())
 		if role == 'HEALER' then
 			print('oUF RAIDFRAMES enabled --> reload UI')
-			cfg.disableRaidFrameManager = true
+			--cfg.disableRaidFrameManager = true
 			cfg.raid = true
 		else
 			print('oUF RAIDFRAMES disabled --> reload UI')
-			cfg.disableRaidFrameManager = false
+			--cfg.disableRaidFrameManager = false
 			cfg.raid = false
 		end
 	elseif event=='GROUP_ROSTER_UPDATE' then

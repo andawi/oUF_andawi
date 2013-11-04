@@ -8,7 +8,8 @@
 local mediaPath = "Interface\\AddOns\\Media\\"
 local mediaPathN = "Interface\\AddOns\\oUF_andawi\\media\\"
 cfg.texture = mediaPath.."texture"
-cfg.font, cfg.fontsize, cfg.shadowoffsetX, cfg.shadowoffsetY, cfg.fontflag = mediaPathN.."pixel.ttf", 8, 0, 0,  "Outlinemonochrome" -- "" for none THINOUTLINE Outlinemonochrome
+cfg.font, cfg.fontsize, cfg.shadowoffsetX, cfg.shadowoffsetY, cfg.fontflag = mediaPathN.."pixel.ttf", 10, 0, 0,  "Outlinemonochrome" -- "" for none THINOUTLINE Outlinemonochrome
+cfg.font_Pixel8 = mediaPathN.."Pixel8.ttf"
 cfg.fontB = mediaPathN.."ROADWAY.ttf"
 cfg.symbol = mediaPath.."symbol.ttf"
 cfg.buttonTex = mediaPath.."gloss"
@@ -26,6 +27,7 @@ cfg.scale = 1
 
 -- raid == party frames
 cfg.raid = true
+
   
 --player, target, focus 
 cfg.width = 250 
@@ -56,11 +58,11 @@ cfg.AltPowerBar_Height = 12
  cfg.unit_positions = {
              Player = { x= -450, y= 0},  
              Target = { x=	450, y= 0},  
-       Targettarget = { x=    0, y=  -65},  
-              Focus = { x= -260, y=  100},  
+       Targettarget = { x=  115, y=  -70},  
+              Focus = { x= 450, y=  -170},  
         Focustarget = { x=    0, y=  -65},  
                 Pet = { x=	  0, y=  -65},  
-               Raid = { x=	 0, y=  -150},     
+               Raid = { x=	 0, y=  -125},     
 }
 
   -----------------------------
@@ -99,11 +101,11 @@ cfg.spellIDs = {
 
 	--SPELL ID, size, X-POS, Y-POS, anyUnit, ALPHA, Class
 	
-	{6788, 		16, 10, 11, true, 1, 'PRIEST'},			-- Weakened Soul (lowest frame level)
+	{6788, 		16, 10, 11, true, 1, 'PRIEST'},				-- Weakened Soul (lowest frame level)
 	{17, 		14, 10, 11, true, 1, 'PRIEST'},				-- Power Word: Shield
 	{33076, 	14, 27, 11, false, 1, 'PRIEST'},			-- Prayer of Mending
 	{139, 		14, 43, 11, false, 1, 'PRIEST'}, 			-- Renew
-	{77613, 	14, 59, 11, false, 1, 'PRIEST'},				-- Grace
+	{77613, 	14, 59, 11, false, 1, 'PRIEST'},			-- Grace
 	
 	
 	
@@ -119,54 +121,61 @@ cfg.spellIDs = {
 	{31224, 	24, 18, 0, true, 0.9, 'GENERIC'},			-- Cloak of Shadows (100%, 1min)
 	{122783, 	24, 18, 0, true, 0.9, 'GENERIC'},    		-- Diffuse Magic (Monk, 90%; 90sec)
 	{47585, 	24, 18, 0, true, 0.9, 'GENERIC'}, 			-- Dispersion (Shadow, 90%; 2min)
+	--{139,		24,	18,	0,	true,	0.9,	'GENERIC'},		-- debug#1							
 	
 	
-	--POS2 (35, 0) - personal Defensive CDs #2
-	{86659, 	24, 35, 0, true, 0.9, 'GENERIC'},			-- Guardian of Ancient Kings (50%; 3min; PROT)
-	{106922, 	24, 35, 0, true, 0.9, 'GENERIC'},			-- Might of Ursoc (+30% HP; 3min CD)
-	{48707,		24, 35, 0, true, 0.9, 'GENERIC'}, 			-- Anti-magic Shell
-	{115203,	24, 35, 0, true, 0.9, 'GENERIC'}, 			-- Fortifying Brew (20%; 3min)
-	{118038,	24, 35, 0, true, 0.9, 'GENERIC'}, 			-- Die by the Sword (Warrior 20%; 2min)
 	
+	--POS2 - personal Defensive CDs #2
+	{86659, 	24, 30, 0, true, 0.9, 'GENERIC'},			-- Guardian of Ancient Kings (50%; 3min; PROT)
+	{106922, 	24, 30, 0, true, 0.9, 'GENERIC'},			-- Might of Ursoc (+30% HP; 3min CD)
+	{48707,		24, 30, 0, true, 0.9, 'GENERIC'}, 			-- Anti-magic Shell
+	{115203,	24, 30, 0, true, 0.9, 'GENERIC'}, 			-- Fortifying Brew (20%; 3min)
+	{118038,	24, 30, 0, true, 0.9, 'GENERIC'}, 			-- Die by the Sword (Warrior 20%; 2min)
+	--{41635,		24,	30,	0,	true,	0.9,	'GENERIC'},		-- debug#2
 	
-	--POS3 (52, 0) - personal Defensive CDs #3
-	{31850,		24, 52, 0, true, 0.9, 'GENERIC'},			-- Ardent Defender (20%; 3min CD; lifesaver)
-	{642, 		24, 52, 0, true, 0.9, 'GENERIC'}, 			-- Divine Shield (100%; 5min)
-	{22812, 	24, 52, 0, true, 0.9, 'GENERIC'},			-- Barkskin (20%; 1min)
-	{55233, 	24, 52, 0, true, 0.9, 'GENERIC'}, 			-- Vampiric Blood	
-	{104773, 	24, 52, 0, true, 0.9, 'GENERIC'},			-- Unending Resolve (Warlock 40%; 3min)
-	{30823, 	24,	52, 0, true, 0.9, 'GENERIC'},			-- Shamanistic Rage (Elemental, Enhancement 30%; 1min CD)
-	{1966, 		24,	52, 0, true, 0.9, 'GENERIC'},			-- Feint (AoE 50%; 65% w/ Glyph - no CD)
-	{115176, 	24,	52, 0, true, 0.9, 'GENERIC'},			-- Zen Meditaion (90% group saver; 3min)
-	{12975, 	24, 52, 0, true, 0.9, 'GENERIC'},			-- Last Stand (+30% HP; 3min CD)
+	--POS3 - personal Defensive CDs #3
+	{31850,		24, 42, 0, true, 0.95, 'GENERIC'},			-- Ardent Defender (20%; 3min CD; lifesaver)
+	{642, 		24, 42, 0, true, 0.95, 'GENERIC'}, 			-- Divine Shield (100%; 5min)
+	{22812, 	24, 42, 0, true, 0.95, 'GENERIC'},			-- Barkskin (20%; 1min)
+	{55233, 	24, 42, 0, true, 0.95, 'GENERIC'}, 			-- Vampiric Blood	
+	{104773, 	24, 42, 0, true, 0.95, 'GENERIC'},			-- Unending Resolve (Warlock 40%; 3min)
+	{30823, 	24,	42, 0, true, 0.95, 'GENERIC'},			-- Shamanistic Rage (Elemental, Enhancement 30%; 1min CD)
+	{1966, 		24,	42, 0, true, 0.95, 'GENERIC'},			-- Feint (AoE 50%; 65% w/ Glyph - no CD)
+	{115176, 	24,	42, 0, true, 0.95, 'GENERIC'},			-- Zen Meditaion (90% group saver; 3min)
+	{12975, 	24, 42, 0, true, 0.95, 'GENERIC'},			-- Last Stand (+30% HP; 3min CD)
 
 	
-	--POS4 (69, 0) - raid wide CDs #4
-	{31821,		24, 69, 0, true, 0.9, 'GENERIC'},			-- Devotion Aura (20%; 3min; magic)
+	--POS4 - raid wide CDs #4
+	{31821,		24, 54, 0, true, 0.95, 'GENERIC'},			-- Devotion Aura (20%; 3min; magic)
+	{114030,	24,	54,	0,	true,	0.95, 'GENERIC'},		-- Vigilance
 	
-	--POS5 (86, 0)
-	{740, 		24, 86, 0, true, 0.95, 'GENERIC'},			-- Tranquility
+	--POS5 
+	{740, 		24, 66, 0, true, 0.95, 'GENERIC'},			-- Tranquility
+	{6940, 		24, 66, 0, true, 0.95, 'GENERIC'},			-- Hand of Sacrifice
 	
-	--POS6 (103, 0) 
-	{97462, 	24, 103, 0, true, 0.95, 'GENERIC'},			-- Rallying Cry
-	{81782,		24, 103, 0, true, 0.95, 'GENERIC'},			-- Power Word Barrier
+	--POS6 
+	{97462, 	24, 88, 0, true, 0.95, 'GENERIC'},			-- Rallying Cry
+	{114039, 	24, 88, 0, true, 0.95, 'GENERIC'},			-- Hand of Purity
+	
+	--POS7
+	{81782,		24, 100, 0, true, 0.95, 'GENERIC'},			-- Power Word Barrier
+	{102342, 	24, 100, 0, true, 0.95, 'GENERIC'},			-- Ironbark (20%; 2min; RESTO)
 
-	
-	--POS7 (122, 0) - last pos
-	{33206, 	24, 122, 0, true, 0.9, 'GENERIC'},			-- Pain Suppress
-	{102342, 	24, 122, 0, true, 0.9, 'GENERIC'},			-- Ironbark (20%; 2min; RESTO)
-	{47788, 	24, 122, 0, true, 0.9, 'GENERIC'},			-- Guardian Spirit
-	{1022, 		24, 122, 0, true, 0.5, 'GENERIC'},			-- Hand of Protection
-	{6940, 		24, 122, 0, true, 0.5, 'GENERIC'},			-- Hand of Sacrifice
+	--POS8
+	{1022, 		24, 112, 0, true, 0.95, 'GENERIC'},			-- Hand of Protection
 	
 	
-	
+	--POSZ (122, 0) - last pos
+	{33206, 	24, 122, 0, true, 0.95, 'GENERIC'},			-- Pain Suppress
+	{47788, 	24, 122, 0, true, 0.95, 'GENERIC'},			-- Guardian Spirit
+
+		
 	-- Mana CDs @ Mana Bar
 	{64901,   	20, 125, -16, true, 0.95, 'GENERIC'},		-- Hymn of Hope
 	{29166,		20, 125, -16, true, 0.95, 'GENERIC'},		-- Innervate
 	
 	
-	-- minor CDs
+	--[[ minor CDs
 	{112048,	14, 40, -8, true, 0.95, 'GENERIC'},			-- Shield Barrier
 	{132404,	14, 53, -8, true, 0.95, 'GENERIC'},			-- Shield Block
 	
@@ -178,7 +187,7 @@ cfg.spellIDs = {
 	
 	{81700,		14, 40, -8, true, 0.95, 'GENERIC'},			-- Archangel
 	{109964,	12, 53, -8, true, 0.95, 'GENERIC', 'PRIEST'},			-- Spirit Shell
-	
+	]]
 	
 	
 
