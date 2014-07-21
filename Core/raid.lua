@@ -5,6 +5,7 @@ local _, class = UnitClass('player')
 
 local raidgrp1, raidgrp2, raidgrp3, raidgrp4, raidgrp5
 
+
 local backdrop = {
     bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
     insets = {top = 1, left = 1, bottom = 1, right = 1},
@@ -59,6 +60,7 @@ local RaidSizeSwitcher = function(self)
 	
 	if InCombatLockdown() then return end
 	
+
 	local difficulty = GetRaidDifficultyID()
 	if difficulty == 3 or difficulty == 5 then -- 10 player
 		raidgrp1:SetAttribute("showRaid", true)
@@ -67,11 +69,11 @@ local RaidSizeSwitcher = function(self)
 		raidgrp4:SetAttribute("showRaid", false)
 		raidgrp5:SetAttribute("showRaid", false)
 		
-		raidgrp1:SetScale(1)
-		raidgrp2:SetScale(1)
-		raidgrp3:SetScale(1)
-		raidgrp4:SetScale(1)
-		raidgrp5:SetScale(1)
+		--[[raidgrp1:SetScale(cfg.raidScale)
+		raidgrp2:SetScale(cfg.raidScale)
+		raidgrp3:SetScale(cfg.raidScale)
+		raidgrp4:SetScale(cfg.raidScale)
+		raidgrp5:SetScale(cfg.raidScale)]]
 		
 	elseif difficulty == 4 or difficulty == 6  or difficulty == 7 then -- 25 player
 		raidgrp1:SetAttribute("showRaid", true)
@@ -80,11 +82,7 @@ local RaidSizeSwitcher = function(self)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
 		
-		raidgrp1:SetScale(1)
-		raidgrp2:SetScale(1)
-		raidgrp3:SetScale(1)
-		raidgrp4:SetScale(1)
-		raidgrp5:SetScale(1)
+		
 	else 
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
@@ -92,11 +90,7 @@ local RaidSizeSwitcher = function(self)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
 		
-		raidgrp1:SetScale(1)
-		raidgrp2:SetScale(1)
-		raidgrp3:SetScale(1)
-		raidgrp4:SetScale(1)
-		raidgrp5:SetScale(1)
+		
 	end
 end
 
@@ -502,7 +496,7 @@ local raid_heal = function(self, unit)
 		if class == "PRIEST" then
 		
 		-- Divine Aegis Shield Value
-			self.AuraStatusDA = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8, cfg.fontflag, 1, 1, 1)
+			self.AuraStatusDA = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusDA:ClearAllPoints()
 			self.AuraStatusDA:SetPoint("TOPRIGHT",-12, -2)
 			self.AuraStatusDA.frequentUpdates = 0.1
@@ -510,7 +504,7 @@ local raid_heal = function(self, unit)
 			self:Tag(self.AuraStatusDA, "[oUF_andawi:DA]")
 		
 		-- Spirit Shell Shield Value
-			self.AuraStatusSS = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8, cfg.fontflag, 1, 1, 1)
+			self.AuraStatusSS = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusSS:ClearAllPoints()
 			self.AuraStatusSS:SetPoint("BOTTOMRIGHT", -10, 0)
 			self.AuraStatusSS.frequentUpdates = 0.1
@@ -526,8 +520,8 @@ local raid_heal = function(self, unit)
 
 		end
 
-			
-		local name = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8)
+--debug			
+		local name = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize)
 		name:SetPoint("TOPLEFT", self.Health, 3, -4)
 	    name:SetJustifyH"LEFT"
 		name:SetShadowColor(0, 0, 0)
@@ -544,7 +538,7 @@ local raid_heal = function(self, unit)
         self:Tag(htext, '[oUF_andawi:info]')		
 		
 		local lfd = fs(self.Health, "OVERLAY", cfg.symbol, 8, "", 1, 1, 1)
-		lfd:SetPoint("TOPLEFT", 27, -4)
+		lfd:SetPoint("TOPLEFT", 30, -4)
 	    self:Tag(lfd, '[oUF_andawi:LFD]')	
 
 		self.RaidIcon:SetSize(20, 20)
@@ -591,10 +585,13 @@ local raid_heal = function(self, unit)
 	    
 		self:RegisterEvent('GROUP_ROSTER_UPDATE', RaidSizeSwitcher)
 		self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
-        self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
+--debug
+--		self:RegisterEvent('PLAYER_TARGET_CHANGED', RaidSizeSwitcher)
+--      
+		self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
 
 	
-	self:SetScale(cfg.scale) 
+	self:SetScale(cfg.raidScale) 
 end
 
 
@@ -620,19 +617,17 @@ oUF:Factory(function(self)
 		raidgrp1 = oUF:SpawnHeader(nil, nil, "raid,party,solo",
 		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
 		'showPlayer', true,
-		'showSolo', false,
+		'showSolo', true,
 		'showParty', true,
 		'showRaid', true,
-		'xoffset', 5,
-		'yOffset', -15,
 		'point', "LEFT",
+		'xoffset', 5,
 		'groupFilter', 1,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
-		'maxColumns', 8,
-		'unitsPerColumn', 5,
-		'columnSpacing', 5,
-		'columnAnchorPoint', "TOP")
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
+		'maxColumns', 1,
+		'unitsPerColumn', 5)
 
 
 		raidgrp2 = oUF:SpawnHeader(nil, nil, "raid",
@@ -645,8 +640,9 @@ oUF:Factory(function(self)
 		'yOffset', -15,
 		'point', "LEFT",
 		'groupFilter', 2,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
 		'maxColumns', 8,
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
@@ -662,8 +658,9 @@ oUF:Factory(function(self)
 		'yOffset', -15,
 		'point', "LEFT",
 		'groupFilter', 3,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
 		'maxColumns', 8,
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
@@ -679,8 +676,9 @@ oUF:Factory(function(self)
 		'yOffset', -15,
 		'point', "LEFT",
 		'groupFilter', 4,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
 		'maxColumns', 8,
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
@@ -696,8 +694,9 @@ oUF:Factory(function(self)
 		'yOffset', -15,
 		'point', "LEFT",
 		'groupFilter', 5,
-		'groupBy', 'ROLE',
-		'groupingOrder', 'MAINTANK',
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
 		'maxColumns', 8,
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
@@ -705,10 +704,10 @@ oUF:Factory(function(self)
 
 		--else
 		raidgrp1:SetPoint("CENTER", UIParent, "CENTER", cfg.unit_positions.Raid.x, cfg.unit_positions.Raid.y)			
-		raidgrp2:SetPoint('TOP', raidgrp1, 'BOTTOM', 0, -10)
-		raidgrp3:SetPoint('TOP', raidgrp2, 'BOTTOM', 0, -10)
-		raidgrp4:SetPoint('TOP', raidgrp3, 'BOTTOM', 0, -10)
-		raidgrp5:SetPoint('TOP', raidgrp4, 'BOTTOM', 0, -10)
+		raidgrp2:SetPoint('TOP', raidgrp1, 'BOTTOM', 0, -5)
+		raidgrp3:SetPoint('TOP', raidgrp2, 'BOTTOM', 0, -5)
+		raidgrp4:SetPoint('TOP', raidgrp3, 'BOTTOM', 0, -5)
+		raidgrp5:SetPoint('TOP', raidgrp4, 'BOTTOM', 0, -5)
 	end
 end)
 

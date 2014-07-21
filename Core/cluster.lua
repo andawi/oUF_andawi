@@ -170,7 +170,7 @@ local Enable = function(self)
         update = 200 / 1000
         healrange = 30
 
-        local oUF_andawiCluster = fs(self.Health, "OVERLAY", cfg.font_Pixel8, 8, cfg.fontflag, 1, 1, 1)
+        local oUF_andawiCluster = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
         oUF_andawiCluster:SetPoint("TOPRIGHT", -1, -2)
         oUF_andawiCluster:SetJustifyH("RIGHT")
         self.oUF_andawiCluster = oUF_andawiCluster
@@ -186,7 +186,7 @@ local Enable = function(self)
 		frame:RegisterEvent("PLAYER_REGEN_DISABLED")
         frame:SetScript("OnUpdate", updatePos)
 		
-		ClusterDebug = fs(UIParent, "OVERLAY", cfg.font, 8, cfg.fontflag, 1, 1, 1)
+		ClusterDebug = fs(UIParent, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
 		ClusterDebug:SetJustifyH("LEFT")
         ClusterDebug:SetPoint("CENTER",600, -250)
 

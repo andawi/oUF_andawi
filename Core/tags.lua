@@ -265,7 +265,7 @@ local remainingAbsorbAmount
 
 --Divine Aegis
 oUF.Tags.Methods['oUF_andawi:DA'] = function(u)
-	if not UnitPlayerControlled(u) then return end
+	--if not UnitPlayerControlled(u) then return end
 	DA, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, L['Divine Aegis'])
 	if not DA then return end
   	
@@ -287,7 +287,7 @@ end
 
 --Spirit Shell
 oUF.Tags.Methods['oUF_andawi:SS'] = function(u)
-	if not UnitPlayerControlled(u) then return end
+	--if not UnitPlayerControlled(u) then return end
 	DA, _,_,_,_,_, expirationTime, fromwho,_,_,spellID = UnitAura(u, "Spirit Shell")
 	
 	if not DA then return end
