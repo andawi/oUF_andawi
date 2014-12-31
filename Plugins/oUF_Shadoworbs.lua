@@ -3,7 +3,7 @@ if(select(2, UnitClass('player')) ~= 'PRIEST') then return end
 local parent, ns = ...
 local oUF = ns.oUF or oUF
 
-local PRIEST_BAR_NUM_ORBS = PRIEST_BAR_NUM_ORBS
+local PRIEST_BAR_NUM_ORBS = PRIEST_BAR_NUM_LARGE_ORBS
 local SPELL_POWER_SHADOW_ORBS = SPELL_POWER_SHADOW_ORBS
 
 local function Update(self, event, unit, powerType)

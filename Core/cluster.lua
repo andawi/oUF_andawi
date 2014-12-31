@@ -14,7 +14,8 @@ local units = {}
 local ClusterDebug
 
 oUF.Tags.Methods['oUF_andawi:cluster'] = function(u)
-    if units[u] then
+    
+	if units[u] then
         local num = units[u].numInRange
         if num > 1 then
             if num == 5 then
@@ -171,7 +172,7 @@ local Enable = function(self)
         healrange = 30
 
         local oUF_andawiCluster = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
-        oUF_andawiCluster:SetPoint("TOPRIGHT", -1, -2)
+        oUF_andawiCluster:SetPoint("TOPRIGHT", -1, 0)
         oUF_andawiCluster:SetJustifyH("RIGHT")
         self.oUF_andawiCluster = oUF_andawiCluster
 		self.oUF_andawiCluster.frequentUpdates = update

@@ -1,0 +1,4 @@
+
+11.08.2014
+cooldown frame fix for oUF & AuraWatch:
+	CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")

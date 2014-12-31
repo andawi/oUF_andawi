@@ -161,7 +161,8 @@ local function SetupIcons(self)
 		icon.name = name
 	
 		if not watch.customIcons then
-			local cd = CreateFrame("Cooldown", nil, icon)
+			print("debug AuraWatch customIcons")
+			local cd = CreateFrame("Cooldown", nil, icon, "CooldownFrameTemplate")
 			cd:SetAllPoints(icon)
 			icon.cd = cd
 			

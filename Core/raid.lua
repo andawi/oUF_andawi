@@ -81,7 +81,24 @@ local RaidSizeSwitcher = function(self)
 		raidgrp3:SetAttribute("showRaid", true)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
-		
+	
+	elseif difficulty == 16 then -- mythic
+		raidgrp1:SetAttribute("showRaid", true)
+		raidgrp2:SetAttribute("showRaid", true)
+		raidgrp3:SetAttribute("showRaid", true)
+		raidgrp4:SetAttribute("showRaid", true)
+		raidgrp5:SetAttribute("showRaid", false)
+		raidgrp6:SetAttribute("showRaid", false)
+		raidgrp7:SetAttribute("showRaid", false)
+		raidgrp8:SetAttribute("showRaid", false)
+	
+	elseif difficulty == 17 then -- LFR
+		raidgrp1:SetAttribute("showRaid", true)
+		raidgrp2:SetAttribute("showRaid", true)
+		raidgrp3:SetAttribute("showRaid", true)
+		raidgrp4:SetAttribute("showRaid", true)
+		raidgrp5:SetAttribute("showRaid", true)
+	
 		
 	else 
 		raidgrp1:SetAttribute("showRaid", true)
@@ -102,7 +119,7 @@ local auraIcon = function(auras, button)
     c:SetFont(cfg.aura_font, cfg.aura_fontsize, cfg.aura_fontflag)
     c:SetTextColor(.8, .8, .8)
     auras.disableCooldown = cfg.disableCooldown
-	button.cd:SetReverse()  	--inverse cooldown spiral
+	button.cd:SetReverse(true)  	--inverse cooldown spiral
 	button.cd.noCooldownCount = true	--prevent OmniCC from showing CD counter in this button
     button.icon:SetTexCoord(.1, .9, .1, .9)
 	if cfg.border then
@@ -195,8 +212,8 @@ local AWIcon = function(AWatch, icon, spellID, name, self)			--AuraWatch
 
 	icon:SetBackdrop(backdrop_1px)
 
-	if spellID == 6788 then 
-		icon:SetBackdropColor(1,0,0,0.75)
+	if spellID == 6788 then 		--weakend soul
+		icon:SetBackdropColor(1,0,0,0.60)
 	else
 		icon:SetBackdropColor(0,0,0,0.85)
 	end
@@ -208,11 +225,11 @@ end
 local createAuraWatch = function(self, unit)
 	if cfg.showAuraWatch then
 		
-		local auras = CreateFrame("Frame", nil, self)
+		local auras = CreateFrame("Frame", nil, self.Health)
 		auras:SetAllPoints(self.Health)
 		auras.onlyShowPresent = true
 		auras.icons = {}
-		auras.hideCooldown = true			-- org. AuraWatch cd frame will overlap each other - thus create own frame for this
+		auras.customIcons = true		-- org. AuraWatch cd frame will overlap each other - thus create own frame for this
 		auras:SetFrameStrata('HIGH')
 		
 		for i, v in pairs(cfg.spellIDs) do
@@ -242,13 +259,15 @@ local createAuraWatch = function(self, unit)
 				
 				if v[6] then icon.icon:SetAlpha(v[6]) end		
 				
-				icon.hideCooldown = true		-- org. AuraWatch cd frame will overlap each other - thus create own frame for this
-				
-				local cd = CreateFrame("Cooldown", nil, icon)
+				local cd = CreateFrame("Cooldown", nil, icon, "CooldownFrameTemplate")
 				cd:SetAllPoints(icon)
-				cd:SetFrameLevel(i)
+				--cd:SetFrameLevel(i)
 				icon.cd = cd
-			
+				
+				local count = fs(icon, "OVERLAY", cfg.font_Pixel13, 13, "THINOUTLINE", 1, 1, 1)
+				count:SetPoint("CENTER", icon, "BOTTOMRIGHT", -2,5)
+				icon.count = count
+				
 				if v[8] then icon.Class = v[8] end
 			
 				auras.icons[v[1]] = icon
@@ -496,20 +515,33 @@ local raid_heal = function(self, unit)
 		if class == "PRIEST" then
 		
 		-- Divine Aegis Shield Value
+		--[[
 			self.AuraStatusDA = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusDA:ClearAllPoints()
 			self.AuraStatusDA:SetPoint("TOPRIGHT",-12, -2)
 			self.AuraStatusDA.frequentUpdates = 0.1
 			self.AuraStatusDA:SetAlpha(.6)
 			self:Tag(self.AuraStatusDA, "[oUF_andawi:DA]")
+		]]
 		
 		-- Spirit Shell Shield Value
 			self.AuraStatusSS = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusSS:ClearAllPoints()
-			self.AuraStatusSS:SetPoint("BOTTOMRIGHT", -10, 0)
+			self.AuraStatusSS:SetPoint("TOPRIGHT",-10, 0)
 			self.AuraStatusSS.frequentUpdates = 0.1
 			self.AuraStatusSS:SetAlpha(.6)
 			self:Tag(self.AuraStatusSS, "[oUF_andawi:SS]")
+		
+		
+		-- Clarity of Will
+			self.AuraStatusCoW = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
+			self.AuraStatusCoW:ClearAllPoints()
+			self.AuraStatusCoW:SetPoint("BOTTOMRIGHT", -10, 1)
+			self.AuraStatusCoW.frequentUpdates = 0.1
+			self.AuraStatusCoW:SetAlpha(.6)
+			self:Tag(self.AuraStatusCoW, "[oUF_andawi:CoW]")
+		
+		
 		
 		-- Power Word Fortitude Indicator
 			self.AuraStatusPWF = self.Health:CreateFontString(nil, "OVERLAY")
@@ -517,12 +549,11 @@ local raid_heal = function(self, unit)
 			self.AuraStatusPWF:SetJustifyH("RIGHT")
 			self.AuraStatusPWF:SetFont(cfg.squares, 10, "OUTLINE")
 			self:Tag(self.AuraStatusPWF, "[oUF_andawi:fort]")
-
 		end
 
 --debug			
 		local name = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize)
-		name:SetPoint("TOPLEFT", self.Health, 3, -4)
+		name:SetPoint("TOPLEFT", self.Health, 3, -3)
 	    name:SetJustifyH"LEFT"
 		name:SetShadowColor(0, 0, 0)
 		name:SetShadowOffset(1, -1)
@@ -552,7 +583,7 @@ local raid_heal = function(self, unit)
 
 		local debuffs = CreateFrame("Frame", nil, self)
 			debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 4, 3)
-			debuffs:SetFrameStrata('TOOLTIP')
+			debuffs:SetFrameStrata('HIGH')
 			debuffs.initialAnchor = "RIGHT"
 			debuffs["growth-x"] = "LEFT"
 			debuffs:SetHeight(18)
@@ -618,7 +649,7 @@ oUF:Factory(function(self)
 		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
 		'showPlayer', true,
 		'showSolo', true,
-		'showParty', true,
+		'showParty', false,
 		'showRaid', true,
 		'point', "LEFT",
 		'xoffset', 5,
@@ -702,12 +733,71 @@ oUF:Factory(function(self)
 		'columnSpacing', 5,
 		'columnAnchorPoint', "TOP")
 
+		
+		raidgrp6 = oUF:SpawnHeader(nil, nil, "raid",
+		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
+		'showPlayer', true,
+		'showSolo', false,
+		'showParty', false,
+		'showRaid', true,
+		'xoffset', 5,
+		'yOffset', -15,
+		'point', "LEFT",
+		'groupFilter', 6,
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
+		'maxColumns', 8,
+		'unitsPerColumn', 5,
+		'columnSpacing', 5,
+		'columnAnchorPoint', "TOP")
+		
+		raidgrp7 = oUF:SpawnHeader(nil, nil, "raid",
+		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
+		'showPlayer', true,
+		'showSolo', false,
+		'showParty', false,
+		'showRaid', true,
+		'xoffset', 5,
+		'yOffset', -15,
+		'point', "LEFT",
+		'groupFilter', 7,
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
+		'maxColumns', 8,
+		'unitsPerColumn', 5,
+		'columnSpacing', 5,
+		'columnAnchorPoint', "TOP")
+		
+		raidgrp8 = oUF:SpawnHeader(nil, nil, "raid",
+		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
+		'showPlayer', true,
+		'showSolo', false,
+		'showParty', false,
+		'showRaid', true,
+		'xoffset', 5,
+		'yOffset', -15,
+		'point', "LEFT",
+		'groupFilter', 8,
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'MAINTANK,TANK,DAMAGER,NONE,HEALER',
+		'sortMethod', 'NAME',
+		'maxColumns', 8,
+		'unitsPerColumn', 5,
+		'columnSpacing', 5,
+		'columnAnchorPoint', "TOP")
+		
+		
 		--else
 		raidgrp1:SetPoint("CENTER", UIParent, "CENTER", cfg.unit_positions.Raid.x, cfg.unit_positions.Raid.y)			
 		raidgrp2:SetPoint('TOP', raidgrp1, 'BOTTOM', 0, -5)
 		raidgrp3:SetPoint('TOP', raidgrp2, 'BOTTOM', 0, -5)
 		raidgrp4:SetPoint('TOP', raidgrp3, 'BOTTOM', 0, -5)
 		raidgrp5:SetPoint('TOP', raidgrp4, 'BOTTOM', 0, -5)
+		raidgrp6:SetPoint('TOP', raidgrp5, 'BOTTOM', 0, -5)
+		raidgrp7:SetPoint('TOP', raidgrp6, 'BOTTOM', 0, -5)
+		raidgrp8:SetPoint('TOP', raidgrp7, 'BOTTOM', 0, -5)
 	end
 end)
 

@@ -28,14 +28,7 @@ local OnLeave = function(self)
 			end
 end
 
-local range = {
-        insideAlpha = 1,
-        outsideAlpha = .25,
-    }
 
-	ns.RangeArrowScale = 0.7
-	ns.arrowmouseover = true
-	ns.arrowmouseoveralways = false
 
 
 local Highlight = function(self) 
@@ -118,7 +111,7 @@ local auraIcon = function(auras, button)
     c:SetFont(cfg.aura_font, cfg.aura_fontsize, cfg.aura_fontflag)
     c:SetTextColor(.8, .8, .8)
     auras.disableCooldown = cfg.disableCooldown
-	button.cd:SetReverse()  	--inverse cooldown spiral
+	button.cd:SetReverse(true)  	--inverse cooldown spiral
 	button.cd.noCooldownCount = true	--prevent OmniCC from showing CD counter in this button
     button.icon:SetTexCoord(.1, .9, .1, .9)
 	if cfg.border then
@@ -298,7 +291,7 @@ local createAuraWatch = function(self, unit)
 				
 				icon.hideCooldown = true		-- org. AuraWatch cd frame will overlap each other - thus create own frame for this
 				
-				local cd = CreateFrame("Cooldown", nil, icon)
+				local cd = CreateFrame("Cooldown", nil, icon, "CooldownFrameTemplate")
 				cd:SetAllPoints(icon)
 				cd:SetFrameLevel(i)
 				icon.cd = cd
@@ -426,6 +419,11 @@ local Shared = function(self, unit)
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
 	
+	
+	
+	
+	
+	
     self.framebd = framebd(self, self)		--extra Frame Backdrop...
 	
     local h = createStatusbar(self, cfg.texture, nil, nil, nil, cfg.Color.Health.r, cfg.Color.Health.g, cfg.Color.Health.b, 1)
@@ -549,6 +547,21 @@ local UnitSpecific = {
     player = function(self, ...)
         Shared(self, ...)
 		
+		
+		--oUF_Fader plugin
+		self.FadeCasting = true
+		self.FadeCombat = true
+		self.FadeTarget = true
+		self.FadeHealth = true
+		self.FadePower = false
+		self.FadeHover = true
+		self.FadeSmooth = 0.25
+		self.FadeMinAlpha = 0
+		self.FadeMaxAlpha = 1.0
+		--end
+		
+		
+		
 		self:SetSize(cfg.width, cfg.health_height+cfg.power_height+1)
 		self.Health:SetHeight(cfg.health_height)
 		self.Power:SetHeight(cfg.power_height)
@@ -559,35 +572,39 @@ local UnitSpecific = {
 	    if cfg.healcomm then Healcomm(self) end
 		
 		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-        name:SetPoint("LEFT", self.Health, 4, 0)
+        name:SetPoint("TOPLEFT", self.Health, 0, 6)
         name:SetJustifyH"LEFT"
+		
 		if cfg.class_colorbars then
 		    self:Tag(name, '[oUF_andawi:lvl] [long:name]')
 		else
 		    self:Tag(name, '[oUF_andawi:lvl] [oUF_andawi:color][long:name]')
 		end
 		
-		local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-        htext:SetPoint("RIGHT", self.Health, -2, 0)
+		--[[local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
+        htext:SetPoint("RIGHT", self.Health, -2, -13)
 		htext.frequentUpdates = .1
         self:Tag(htext, '[oUF_andawi:hp][oUF_andawi:pp]')
-		
+		]]
 		self.RaidIcon:SetSize(23, 23)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 11)
 		
+			
 		if cfg.auras then
             local d = CreateFrame("Frame", nil, self)
-			d.size = 38
+			d.size = 24
 			d.spacing = 4
-			d.num = cfg.player_debuffs_num 
-            d:SetPoint("RIGHT", self, "LEFT", -20, 25)
+		    d.num = cfg.target_debuffs_num
+            d:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 1, 8)
 			d:SetSize(cfg.width, d.size)
-            d.initialAnchor = "BOTTOMRIGHT"
+            d.initialAnchor = "TOPRIGHT"
             d["growth-x"] = "LEFT"
+			d["growth-y"] = "UP"
+            d.onlyShowPlayer = false
             d.PostCreateIcon = auraIcon
             d.PostUpdateIcon = PostUpdateIcon
             d.CustomFilter = CustomFilter
-            self.Debuffs = d
+            self.Debuffs = d       
         end			
 		
 		local ct = self.Health:CreateTexture(nil, 'OVERLAY')
@@ -600,10 +617,10 @@ local UnitSpecific = {
 	    r:SetText("|cff5F9BFFR|r")
 	    self.Resting = r
 		
-		local PvP = self.Health:CreateTexture(nil, 'OVERLAY')
+		--[[local PvP = self.Health:CreateTexture(nil, 'OVERLAY')
         PvP:SetSize(28, 28)
         PvP:SetPoint('BOTTOMLEFT', self.Health, 'TOPRIGHT', -15, -20)
-        self.PvP = PvP
+        self.PvP = PvP]]
 		
         if cfg.specific_power then 
 		    if (class == "PALADIN" or class == "MONK") then
@@ -740,6 +757,10 @@ local UnitSpecific = {
 
 		Shared(self, ...)
 		
+
+		
+		
+		
 		self:SetSize(cfg.width, cfg.health_height+cfg.power_height+1)
 		self.Health:SetHeight(cfg.health_height)
 		self.Power:SetHeight(cfg.power_height)
@@ -748,8 +769,9 @@ local UnitSpecific = {
 		if cfg.portraits then Portraits(self) end
 		
 		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-        name:SetPoint("LEFT", self.Health, 4, 0)
+        name:SetPoint("TOPLEFT", self.Health, 0, 6)
         name:SetJustifyH"LEFT"
+		
 		if cfg.class_colorbars then
 		    self:Tag(name, '[oUF_andawi:lvl] [long:name]')
 		else 
@@ -757,7 +779,7 @@ local UnitSpecific = {
 		end
 
 		local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-        htext:SetPoint("RIGHT", self.Health, -2, 0)
+        htext:SetPoint("BOTTOMRIGHT", self.Health, -2, -15)
 		htext.frequentUpdates = .1
         self:Tag(htext, '[oUF_andawi:hp][oUF_andawi:pp]')
 		
@@ -770,7 +792,7 @@ local UnitSpecific = {
 			b.spacing = 4
 		    b.num = cfg.target_buffs_num
             b:SetSize(b.size*4+b.spacing*3, b.size)
-		    b:SetPoint("TOPLEFT", self, "TOPRIGHT", 20, 25)
+		    b:SetPoint("TOPLEFT", self, "TOPRIGHT", 50, 25)
             b.initialAnchor = "TOPLEFT" 
             b["growth-y"] = "DOWN"
             b.PostCreateIcon = auraIcon
@@ -781,10 +803,11 @@ local UnitSpecific = {
 			d.size = 24
 			d.spacing = 4
 		    d.num = cfg.target_debuffs_num
-            d:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 1, 7)
+            d:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 1, 8)
 			d:SetSize(cfg.width, d.size)
-            d.initialAnchor = "TOPLEFT"
-            d["growth-y"] = "UP"
+            d.initialAnchor = "TOPRIGHT"
+            d["growth-x"] = "LEFT"
+			d["growth-y"] = "UP"
             d.onlyShowPlayer = cfg.onlyShowPlayer
             d.PostCreateIcon = auraIcon
             d.PostUpdateIcon = PostUpdateIcon
@@ -833,10 +856,10 @@ local UnitSpecific = {
         ph:SetPoint('CENTER', self.Health, 'BOTTOMLEFT', 3, -3)
         self.PhaseIcon = ph
 		
-		local PvP = self.Health:CreateTexture(nil, 'OVERLAY')
+		--[[local PvP = self.Health:CreateTexture(nil, 'OVERLAY')
         PvP:SetSize(28, 28)
         PvP:SetPoint('BOTTOMLEFT', self.Health, 'TOPRIGHT', -15, -20)
-        self.PvP = PvP
+        self.PvP = PvP]]
 		
     end,
 

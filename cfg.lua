@@ -5,19 +5,23 @@
   -- Media
   -----------------------------
   
-local mediaPath = "Interface\\AddOns\\Media\\"
-local mediaPathN = "Interface\\AddOns\\oUF_andawi\\media\\"
-cfg.texture = mediaPath.."texture"
-cfg.font, cfg.fontsize, cfg.shadowoffsetX, cfg.shadowoffsetY, cfg.fontflag = mediaPathN.."pixel.ttf", 10, 0, 0,  "Outlinemonochrome" -- "" for none THINOUTLINE Outlinemonochrome
-cfg.font_Pixel8 = mediaPathN.."Pixel8.ttf"
-cfg.fontB = mediaPathN.."ROADWAY.ttf"
-cfg.symbol = mediaPath.."symbol.ttf"
-cfg.buttonTex = mediaPath.."gloss"
-cfg.raidIcons = mediaPath.."raidicons"
-cfg.squares = mediaPathN.."squares.ttf"
-cfg.arrow = mediaPathN.."Arrow"
+local textures = "Interface\\AddOns\\oUF_andawi\\media\\textures\\"
+local fonts = "Interface\\AddOns\\oUF_andawi\\media\\fonts\\"
 
-cfg.highlightBorder = mediaPathN..'highlightBorder'
+cfg.texture = textures.."texture"
+cfg.buttonTex = textures.."gloss"
+cfg.raidIcons = textures.."raidicons"
+cfg.arrow = textures.."Arrow"
+cfg.highlightBorder = textures..'highlightBorder'
+
+cfg.font, cfg.fontsize, cfg.shadowoffsetX, cfg.shadowoffsetY, cfg.fontflag = fonts.."pixel10.ttf", 10, 0, 0,  "Outlinemonochrome" -- "" for none THINOUTLINE Outlinemonochrome
+cfg.font_Pixel8 = fonts.."Pixel8.ttf"
+cfg.font_Pixel13 = fonts.."pixel13.ttf"
+cfg.fontB = fonts.."ROADWAY.ttf"
+cfg.symbol = fonts.."symbol.ttf"
+cfg.squares = fonts.."squares.ttf"
+
+
 
   -----------------------------
   -- Unit Frames 
@@ -35,18 +39,18 @@ cfg.pixelFontSize = 8 * 1/cfg.raidScale
 
   
 --player, target, focus 
-cfg.width = 250 
-cfg.health_height = 30
-cfg.power_height = 3
-cfg.specific_power_height = 6
+cfg.width = 200
+cfg.health_height = 20
+cfg.power_height = 1
+cfg.specific_power_height = 3
 -- raid / party
 cfg.raid_width = 100
-cfg.raid_health_height = 38
-cfg.raid_power_height = 3
+cfg.raid_health_height = 36
+cfg.raid_power_height = 1
 
 --pet, targettarget, focustarget
 cfg.pet_width = 90
-cfg.pet_height = 30
+cfg.pet_height = 15
 
 cfg.disableRaidFrameManager = false
 cfg.portraits = false
@@ -61,13 +65,13 @@ cfg.AltPowerBar_Height = 12
 -- Unit Frames Positions
 
  cfg.unit_positions = {
-             Player = { x= -450, y= 0},  
-             Target = { x=	450, y= 0},  
-       Targettarget = { x=  115, y=  -70},  
+             Player = { x= -275, y= 20},  
+             Target = { x=	275, y= 20},  
+       Targettarget = { x=  120, y=  -100},  
               Focus = { x= 450, y=  -170},  
         Focustarget = { x=    0, y=  -65},  
-                Pet = { x=	  0, y=  -65},  
-               Raid = { x=	 0, y=  -125},     
+                Pet = { x=	  -100, y=  -100},  
+               Raid = { x=	 0, y=  -110},     
 }
 
   -----------------------------
@@ -76,12 +80,12 @@ cfg.AltPowerBar_Height = 12
   
 cfg.auras = true  -- disable all auras
 cfg.border = false
-cfg.onlyShowPlayer = false -- only show player debuffs on target
+cfg.onlyShowPlayer = true -- only show player debuffs on target
 cfg.disableCooldown = false -- hide Cooldown Spiral
-cfg.aura_font, cfg.aura_fontsize, cfg.aura_fontflag = mediaPath.."pixel.ttf", 8, "Outlinemonochrome" 
+cfg.aura_font, cfg.aura_fontsize, cfg.aura_fontflag = fonts.."pixel.ttf", 8, "Outlinemonochrome" 
 cfg.player_debuffs_num = 18
 cfg.target_debuffs_num = 18
-cfg.target_buffs_num = 12
+cfg.target_buffs_num = 20
 
   -----------------------------
   -- Plugins 
@@ -106,11 +110,11 @@ cfg.spellIDs = {
 
 	--SPELL ID, size, X-POS, Y-POS, anyUnit, ALPHA, Class
 	
-	{6788, 		14, 10, 11, true, 1, 'PRIEST'},				-- Weakened Soul (lowest frame level)
-	{17, 		12, 10, 11, true, 1, 'PRIEST'},				-- Power Word: Shield
-	{33076, 	12, 27, 11, false, 1, 'PRIEST'},			-- Prayer of Mending
-	{139, 		12, 43, 11, false, 1, 'PRIEST'}, 			-- Renew
-	{77613, 	12, 59, 11, false, 1, 'PRIEST'},			-- Grace
+	{6788, 		14, 10, 9, true, 1, 'PRIEST'},				-- Weakened Soul (lowest frame level)
+	{17, 		12, 10, 9, true, 1, 'PRIEST'},				-- Power Word: Shield
+	{33076, 	12, 27, 9, false, 1, 'PRIEST'},			-- Prayer of Mending
+	{139, 		12, 43, 9, false, 1, 'PRIEST'}, 			-- Renew
+-- obsolete	{77613, 	12, 59, 11, false, 1, 'PRIEST'},			-- Grace
 	
 	
 	
@@ -132,7 +136,7 @@ cfg.spellIDs = {
 	
 	--POS2 - personal Defensive CDs #2
 	{86659, 	24, 25, 0, true, 0.9, 'GENERIC'},			-- Guardian of Ancient Kings (50%; 3min; PROT)
-	{106922, 	24, 25, 0, true, 0.9, 'GENERIC'},			-- Might of Ursoc (+30% HP; 3min CD)
+	--{106922, 	24, 25, 0, true, 0.9, 'GENERIC'},			-- Might of Ursoc (+30% HP; 3min CD)
 	{48707,		24, 25, 0, true, 0.9, 'GENERIC'}, 			-- Anti-magic Shell
 	{115203,	24, 25, 0, true, 0.9, 'GENERIC'}, 			-- Fortifying Brew (20%; 3min)
 	{118038,	24, 25, 0, true, 0.9, 'GENERIC'}, 			-- Die by the Sword (Warrior 20%; 2min)
@@ -176,8 +180,8 @@ cfg.spellIDs = {
 
 		
 	-- Mana CDs @ Mana Bar
-	{64901,   	16, 100, -16, true, 0.95, 'GENERIC'},		-- Hymn of Hope
-	{29166,		16, 100, -16, true, 0.95, 'GENERIC'},		-- Innervate
+--	{64901,   	16, 100, -16, true, 0.95, 'GENERIC'},		-- Hymn of Hope
+--	{29166,		16, 100, -16, true, 0.95, 'GENERIC'},		-- Innervate
 	
 	
 	
@@ -279,13 +283,19 @@ cfg.spellIDs = {
 		['Totem of Wrath'] = true,
 		['Void-Touched'] = true, 
 		['Recently Mass Resurrected'] = true,
-		['Master Adventurer Award'] = true, 
-		
+		['Master Adventurer Award'] = true,
+		['Awesome!'] = true,
+		['Griefer'] = true,
 		['Eck Residue'] = true,
 		['Weakened Heart'] = true,
+		['Vivianne Defeated'] = true,
+		
 		
 		--World Events
 		['Mistletoe'] = true,
+		
+		--Death Knight
+		['Perdition'] = true,
 		
 		-- Mage
 		['Arcane Blast'] = true,
@@ -301,6 +311,9 @@ cfg.spellIDs = {
 		--Pala
 		['Forbearance'] = true,
 		['Ardent Defender'] = true,
+		
+		--Rogue
+		['Cheated Death'] = true,
 		
 		
 		--Warlock

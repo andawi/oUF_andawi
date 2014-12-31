@@ -1,0 +1,9 @@
+------------------------------------------------------------------------
+r146 | oscarucb | 2014-11-21 08:18:01 +0000 (Fri, 21 Nov 2014) | 3 lines
+Changed paths:
+   M /trunk/library.lua
+
+fix the mapdata for FrostfireRidge (zone 941)
+Not sure where the old data came from, it was way off
+
+------------------------------------------------------------------------
