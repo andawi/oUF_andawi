@@ -28,9 +28,12 @@ local OnLeave = function(self)
 			end
 end
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> origin/master
 local Highlight = function(self)
     self.Highlight = self:CreateTexture(nil, 'HIGHLIGHT')
 	self.Highlight:SetAllPoints(self)
@@ -55,7 +58,11 @@ local FocusTarget = function(self)
     end
 end
 
+<<<<<<< HEAD
 local RaidSizeSwitcher = function(self)
+=======
+--[[local RaidSizeSwitcher = function(self)
+>>>>>>> origin/master
 
 	if InCombatLockdown() then return end
 
@@ -86,7 +93,7 @@ local RaidSizeSwitcher = function(self)
 		raidgrp4:SetScale(0.9)
 		raidgrp5:SetScale(0.9)
 	end
-end
+end]]
 
 local GetTime = GetTime
 local floor, fmod = floor, math.fmod
@@ -140,12 +147,42 @@ local auraIcon = function(auras, button)
 
 end
 
+<<<<<<< HEAD
 
+=======
+local PostUpdateHealth = function (health, unit, min, max)
+
+	local disconnnected = not UnitIsConnected(unit)
+	local dead = UnitIsDead(unit)
+	local ghost = UnitIsGhost(unit)
+
+	if disconnnected or dead or ghost then
+		health:SetValue(max)
+
+		if(disconnnected) then
+			health:SetStatusBarColor(0,0,0,0.6)
+		elseif(ghost) then
+			health:SetStatusBarColor(1,1,1,0.3)
+		elseif(dead) then
+			health:SetStatusBarColor(1,0,0,0.8)
+		end
+	else
+		health:SetValue(min)
+		if(unit == 'vehicle') then
+			health:SetStatusBarColor(22/255, 106/255, 44/255)
+		end
+	end
+
+
+
+end
+>>>>>>> origin/master
 
 
 local PostUpdateIcon = function(self, unit, icon, index, offset)
 	local name, _, _, _, dtype, duration, expirationTime, unitCaster = UnitAura(unit, index, icon.filter)
 
+<<<<<<< HEAD
 	--[[
 	local parent = self:GetParent()
 	print (WeakenedSoul)
@@ -164,6 +201,8 @@ local PostUpdateIcon = function(self, unit, icon, index, offset)
 		print("weakened soul debuff not found")
 	end
 	]]
+=======
+>>>>>>> origin/master
 	
 	
 	local texture = icon.icon
@@ -465,7 +504,13 @@ local Shared = function(self, unit)
 
 	h.bg = hbg
     self.Health = h
+<<<<<<< HEAD
 
+=======
+	h.PostUpdate = PostUpdateHealth
+	
+	
+>>>>>>> origin/master
 	oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.3, 0.3, 0.3}
 	self.Health.colorSmooth = true
 
