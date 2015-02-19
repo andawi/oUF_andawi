@@ -69,6 +69,15 @@ local RaidSizeSwitcher = function(self)
 		raidgrp4:SetAttribute("showRaid", false)
 		raidgrp5:SetAttribute("showRaid", false)
 
+<<<<<<< HEAD
+		--[[raidgrp1:SetScale(cfg.raidScale)
+		raidgrp2:SetScale(cfg.raidScale)
+		raidgrp3:SetScale(cfg.raidScale)
+		raidgrp4:SetScale(cfg.raidScale)
+		raidgrp5:SetScale(cfg.raidScale)]]
+
+=======
+>>>>>>> origin/master
 	elseif difficulty == 4 or difficulty == 6  or difficulty == 7 then -- 25 player
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
@@ -143,6 +152,8 @@ local auraIcon = function(auras, button)
 end
 
 
+<<<<<<< HEAD
+=======
 local PostUpdateHealth = function (health, unit, min, max)
 
 	local disconnnected = not UnitIsConnected(unit)
@@ -171,6 +182,7 @@ local PostUpdateHealth = function (health, unit, min, max)
 end
 
 
+>>>>>>> origin/master
 
 local PostUpdateIcon = function(icons, unit, icon, index, offset)
 	local name, _, _, _, dtype, duration, expirationTime, unitCaster = UnitAura(unit, index, icon.filter)
@@ -422,9 +434,15 @@ local raid_heal = function(self, unit)
 			
 	h.bg = hbg
     self.Health = h
+<<<<<<< HEAD
+
+	--h.PostUpdate = PostUpdateHealth
+
+=======
 
 	h.PostUpdate = PostUpdateHealth
 
+>>>>>>> origin/master
 		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.3, 0.3, 0.3}
 		self.Health.colorSmooth = true
 

@@ -61,14 +61,22 @@ local function Update(object, event, unit)
 	
 	if object.unit ~= unit  then return end
 	local role = UnitGroupRolesAssigned(unit)
+<<<<<<< HEAD
+	if role ~= "TANK" then 
+=======
 	local s = UnitThreatSituation(object.unit)
 	
 	if role ~= "TANK" or s <= 1 then 
+>>>>>>> origin/master
 		object.Health.colorSmooth = true
 		object.Health.colorClass = false
 		return 
 	end
+<<<<<<< HEAD
+	
+=======
 		
+>>>>>>> origin/master
 	local r, g, b, t
 	
 	local check  = CheckWeakenedDebuff(unit)
@@ -120,8 +128,11 @@ local function Enable(object)
 	
 	-- make sure aura scanning is active for this object
 	object:RegisterEvent("UNIT_AURA", Update)
+<<<<<<< HEAD
+=======
 	object:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', Update)
 	object:RegisterEvent('UNIT_THREAT_LIST_UPDATE', Update)
+>>>>>>> origin/master
 	object:RegisterEvent("PLAYER_ENTERING_WORLD", CheckSpec)
 	object:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 
@@ -131,8 +142,11 @@ end
 local function Disable(object)
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder or object.DebuffHighlight then
 		object:UnregisterEvent("UNIT_AURA", Update)
+<<<<<<< HEAD
+=======
 		object:UnregisterEvent('UNIT_THREAT_SITUATION_UPDATE', Update)
 		object:UnregisterEvent('UNIT_THREAT_LIST_UPDATE', Update)
+>>>>>>> origin/master
 		object:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 	end
 end
