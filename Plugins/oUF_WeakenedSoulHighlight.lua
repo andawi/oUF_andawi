@@ -2,34 +2,25 @@ local _, ns = ...
 local cfg = ns.cfg
 local oUF = ns.oUF or oUF
 
-if not cfg.DebuffHighlight then return end
+if not cfg.WeakenedSoulHighlight then return end
 
 local playerClass = select(2, UnitClass("player"))
-local CanDispel = {
-	DRUID = {Magic = false, Curse = true, Poison = true},
-	MAGE = {Curse = true},
-	MONK = {Magic = false, Poison = true, Disease = true},
-	PALADIN = {Magic = false, Poison = true, Disease = true},
-	PRIEST = {Magic = true, Disease = true},
-	SHAMAN = {Magic = false, Curse = true}
-}
-local dispellist = CanDispel[playerClass] or {}
 
-local function GetDebuffType(unit, filter)
+
+local function CheckWeakenedDebuff(unit)
 	if not UnitCanAssist("player", unit) then return nil end
+	
 	local i = 1
 	while true do
-		local _, _, texture, _, debufftype = UnitAura(unit, i, "HARMFUL")
-		if not texture then break end
-		if debufftype and not filter or (filter and dispellist[debufftype]) then
-			return debufftype, texture
-		end
+		local name = UnitAura(unit, i, "HARMFUL")
+		if not name then break end
+		if name == "Weakened Soul" then return true end
 		i = i + 1
 	end
 end
 
 local function CheckSpec(self, event)
-	local spec = GetSpecialization()
+	--[[local spec = GetSpecialization()
 	if playerClass == "DRUID" then
 		if (spec == 4) then
 			dispellist.Magic = true
@@ -63,22 +54,56 @@ local function CheckSpec(self, event)
 			dispellist.Disease = true
 			dispellist.Magic = true
 		end
-	end
+	end]]
 end
 
 local function Update(object, event, unit)
+	
 	if object.unit ~= unit  then return end
-	local debuffType, texture  = GetDebuffType(unit, object.DebuffHighlightFilter)
-	local s = UnitThreatSituation(object.unit)
-	local color = DebuffTypeColor[debuffType] 
-	if s and s > 1 then
-		r, g, b = GetThreatStatusColor(s)
-		object.framebd:SetBackdropBorderColor(r, g, b, 0.3)
-	elseif debuffType then	
-		object.framebd:SetBackdropBorderColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 1)	
-	else
-		object.framebd:SetBackdropBorderColor(0, 0, 0)
+	local role = UnitGroupRolesAssigned(unit)
+	if role ~= "TANK" then 
+		object.Health.colorSmooth = true
+		object.Health.colorClass = false
+		return 
 	end
+	
+	local r, g, b, t
+	
+	local check  = CheckWeakenedDebuff(unit)
+	if check or UnitAura(unit, "Power Word: Shield") then 		-- no need to check if PW:S is still activethen		-- set healtbar color to class color if Weakened Soul Debuff is *NOT* available
+		object.Health.colorSmooth = true
+		object.Health.colorClass = false
+	else
+		object.Health.colorSmooth = false
+		object.Health.colorClass = true
+	end
+	
+	-- force color update on aura change
+	local r, g, b, t
+	if(object.Health.colorSmooth) then
+	
+		local min, max = UnitHealth(unit), UnitHealthMax(unit)
+		r, g, b = oUF.ColorGradient(min, max, unpack(object.Health.smoothGradient or oUF.colors.smooth))
+	elseif (object.Health.colorClass and UnitIsPlayer(unit)) then
+		local _, class = UnitClass(unit)
+		t = oUF.colors.class[class]
+		
+	end
+	
+	if(t) then
+		r, g, b = t[1], t[2], t[3]
+	end
+	
+	if(b) then
+		object.Health:SetStatusBarColor(r, g, b, 0.9)
+
+		local bg = object.Health.bg
+		if(bg) then local mu = bg.multiplier or 1
+			bg:SetVertexColor(r * mu, g * mu, b * mu)
+		end
+	end
+	
+	
 end
 
 local function Enable(object)
@@ -87,14 +112,12 @@ local function Enable(object)
 		return
 	end
 	-- if we're filtering highlights and we're not of the dispelling type, return
-	if object.DebuffHighlightFilter and not CanDispel[playerClass] then
+	--[[if object.DebuffHighlightFilter and not CanDispel[playerClass] then
 		return
-	end
+	end]]
 	
 	-- make sure aura scanning is active for this object
 	object:RegisterEvent("UNIT_AURA", Update)
-	object:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', Update)
-	object:RegisterEvent('UNIT_THREAT_LIST_UPDATE', Update)
 	object:RegisterEvent("PLAYER_ENTERING_WORLD", CheckSpec)
 	object:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 
@@ -104,12 +127,10 @@ end
 local function Disable(object)
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder or object.DebuffHighlight then
 		object:UnregisterEvent("UNIT_AURA", Update)
-		object:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', Update)
-	    object:RegisterEvent('UNIT_THREAT_LIST_UPDATE', Update)
 		object:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 	end
 end
 
-oUF:AddElement('DebuffHighlight', Update, Enable, Disable)
+oUF:AddElement('WeakenedSoulHighlight', Update, Enable, Disable)
 
 for i, frame in ipairs(oUF.objects) do Enable(frame) end

@@ -3,27 +3,27 @@ local L = {
   ["Renew"] = GetSpellInfo(139),
   ["Power Word: Shield"] = GetSpellInfo(17),
   ["Weakened Soul"] = GetSpellInfo(6788),
-  
+
   ["Shadow Protection"] = GetSpellInfo(27683),
-  
+
   ["Power Word: Fortitude"] = GetSpellInfo(21562),
   ['Blood Pact'] = GetSpellInfo(6307),
   ['Commanding Shout'] = GetSpellInfo(469),
   ["Fear Ward"] = GetSpellInfo(6346),
   ["Levitate"] = GetSpellInfo(1706),
 
-  
+
   ['Ardent Defender'] = GetSpellInfo(31850),
-  
+
   ['Power Infusion'] = GetSpellInfo(10060),
   ['Renew'] = GetSpellInfo(48068),
-  
+
   ['Divine Aegis'] = GetSpellInfo(47753),
   --['Searing Plasma'] = GetSpellInfo(109363),		--hc
   ['Searing Plasma'] = GetSpellInfo(105479),	--nonhc
   ['Spirit Shell'] = GetSpellInfo(114908),
-  
- 
+
+
 }
 
 local sValue = function(val)
@@ -63,7 +63,7 @@ local function utf8sub(string, i, dots)
       return string
     end
   end
-end	
+end
 
 local function hex(r, g, b)
     if not r then return "|cffFFFFFF" end
@@ -82,7 +82,7 @@ function UnitAuraByID(unit, targetSpellID, filter)
         if spellID == targetSpellID then
             return name, rank, icon, count, dispelType, duration, expires,
                      caster, isStealable, shouldConsolidate, spellID,
-                     canApplyAura, isBossDebuff, value1, value2, value3 
+                     canApplyAura, isBossDebuff, value1, value2, value3
         end
     end
 end
@@ -91,17 +91,17 @@ end
 oUF.colors.power['MANA'] = {.31,.45,.63}
 oUF.colors.power['RAGE'] = {.69,.31,.31}
 
-oUF.Tags.Methods['oUF_andawi:lvl'] = function(u) 
+oUF.Tags.Methods['oUF_andawi:lvl'] = function(u)
     local level = UnitLevel(u)
     local typ = UnitClassification(u)
     local color = GetQuestDifficultyColor(level)
-	
+
 	if level == MAX_PLAYER_LEVEL then
        return nil
     end
 
     if level <= 0 then
-        level = "??" 
+        level = "??"
     end
 
     if typ=="rareelite" then
@@ -115,14 +115,14 @@ oUF.Tags.Methods['oUF_andawi:lvl'] = function(u)
     end
 end
 
-oUF.Tags.Methods['oUF_andawi:hp']  = function(u) 
+oUF.Tags.Methods['oUF_andawi:hp']  = function(u)
     local min, max = UnitHealth(u), UnitHealthMax(u)
     if UnitIsDead(u) then
         return "|cff559655 Dead|r"
     elseif UnitIsGhost(u) then
         return "|cff559655 Ghost|r"
     elseif not UnitIsConnected(u) then
-        return "|cff559655 D/C|r"	
+        return "|cff559655 D/C|r"
 	elseif(min<max) then
     return ('|cffAF5050'..sValue(min)).." | "..math.floor(min/max*100+.5).."%"
 	else
@@ -143,7 +143,7 @@ oUF.Tags.Methods['oUF_andawi:pp'] = function(u)
             r, g, b = t[1], t[2], t[3]
         end
         return ('|cff559655 || ')..hex(r, g, b)..sValue(power)
-    else 
+    else
 	sValue(power)
     end
 end
@@ -194,7 +194,7 @@ end
 oUF.Tags.Events['oUF_andawi:info'] = 'UNIT_HEALTH'
 
 
-oUF.Tags.Methods['party:hp']  = function(u) 
+oUF.Tags.Methods['party:hp']  = function(u)
     local min, max = UnitHealth(u), UnitHealthMax(u)
 	if UnitIsDead(u) then
         return "|cff559655 Dead|r"
@@ -202,7 +202,7 @@ oUF.Tags.Methods['party:hp']  = function(u)
         return "|cff559655 Ghost|r"
     elseif not UnitIsConnected(u) then
         return "|cff559655 D/C|r"
-	else	
+	else
     return ('|cff559655'..math.floor(min/max*100+.5).."%")
 	end
 end
@@ -211,13 +211,13 @@ oUF.Tags.Events['party:hp'] = 'UNIT_HEALTH'
 oUF.Tags.Methods['oUF_andawi:altpower'] = function(u)
 	local cur = UnitPower(u, ALTERNATE_POWER_INDEX)
 	local max = UnitPowerMax(u, ALTERNATE_POWER_INDEX)
-    if not max == 0 then 
+    if not max == 0 then
 		local per = floor(cur/max*100)
 		return format("%s%%", per > 0 and per or 0)
 	else
 		return 0
 	end
-    
+
 end
 oUF.Tags.Events['oUF_andawi:altpower'] = "UNIT_POWER UNIT_MAXPOWER"
 
@@ -253,13 +253,12 @@ end
 oUF.Tags.Events['oUF_andawi:EclipseDirection'] = "UNIT_POWER ECLIPSE_DIRECTION_CHANGE"
 
 local x = "x"
-oUF.Tags.Methods['oUF_andawi:fort'] = function(u) 
-	if not(UnitAura(u, GetSpellInfo(21562)) or UnitAura(u, GetSpellInfo(109773)) or UnitAura(u, GetSpellInfo(469))) then 
-		return "|cff00A1DE"..x.."|r" 
-	end 
+oUF.Tags.Methods['oUF_andawi:fort'] = function(u)
+	if not(UnitAura(u, GetSpellInfo(21562)) or UnitAura(u, GetSpellInfo(109773)) or UnitAura(u, GetSpellInfo(469))) then
+		return "|cff00A1DE"..x.."|r"
+	end
 end
 oUF.Tags.Events['oUF_andawi:fort'] = "UNIT_AURA"
-
 
 
 local spellTimer
@@ -273,11 +272,11 @@ oUF.Tags.Methods['oUF_andawi:DA'] = function(u)
 	--if not UnitPlayerControlled(u) then return end
 	DA, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, L['Divine Aegis'], nil, "PLAYER")
 	if not DA then return end
-  	
-	if fromwho == 'player' then 
-		
+
+	if fromwho == 'player' then
+
 		remainingAbsorbAmount = select(15, UnitAura(u, "Divine Aegis"))
-		if remainingAbsorbAmount then 
+		if remainingAbsorbAmount then
 			spellTimer = GetTime()-expirationTime
 			if spellTimer > -3.35 then
 			return "|cffFF0000"..floor((remainingAbsorbAmount / 1e3) + .5).."k|r"
@@ -294,18 +293,18 @@ end
 oUF.Tags.Methods['oUF_andawi:SS'] = function(u)
 	--if not UnitPlayerControlled(u) then return end
 	DA, _,_,_,_,_, expirationTime, fromwho,_,_,spellID = UnitAura(u, "Spirit Shell", nil, "PLAYER")
-	
+
 	if not DA then return end
-	
-	if fromwho == 'player' then 		
+
+	if fromwho == 'player' then
 		if UnitName(u) == UnitName('player') then
 			remainingAbsorbAmount = select(15, UnitAuraByID(u, 114908))	--need to scan all 40 buffs
 			DA, _,_,_,_,_, expirationTime, fromwho,_,_,spellID = UnitAuraByID(u, 114908)
 		else
-			remainingAbsorbAmount = select(15, UnitAura(u, "Spirit Shell")) 
+			remainingAbsorbAmount = select(15, UnitAura(u, "Spirit Shell"))
 		end
 
-		if remainingAbsorbAmount then 
+		if remainingAbsorbAmount then
 			spellTimer = GetTime()-expirationTime
 			if spellTimer > -3.35 then
 			return "|cffFF0000"..floor((remainingAbsorbAmount/(UnitHealthMax('player')* .6)) * 100 + .5).."%"
@@ -321,19 +320,19 @@ end
 --Clarity of Will
 local CoW,expirationTime, fromwho,spellID,remainingAbsorbAmount
 oUF.Tags.Methods['oUF_andawi:CoW'] = function(u)
-	if not UnitPlayerControlled(u) then return end
+	--if not UnitPlayerControlled(u) then return end
 	CoW, _,_,_,_,_, expirationTime, fromwho,_,_,spellID,_,_,_,remainingAbsorbAmount = UnitAura(u, "Clarity of Will", nil, "PLAYER")
-	
-	if not CoW and not remainingAbsorbAmount then 
-		return 
+
+	if not CoW and not remainingAbsorbAmount then
+		return
 	else
 		spellTimer = GetTime()-expirationTime
 		if spellTimer > -3.35 then
-			return "|cffFF0000"..floor((remainingAbsorbAmount/(UnitHealthMax(u)* .5)) * 100 + .5).."%"
+			return "|cffFF0000"..floor((remainingAbsorbAmount/(UnitHealthMax('player')* .75)) * 100 + .5).."%"
 		elseif spellTimer > -7 then
-				return "|cffFF9900"..floor((remainingAbsorbAmount/(UnitHealthMax(u)* .5)) * 100 + .5).."%"
+				return "|cffFF9900"..floor((remainingAbsorbAmount/(UnitHealthMax('player')* .75)) * 100 + .5).."%"
 		else
-				return "|cff33FF33"..floor((remainingAbsorbAmount/(UnitHealthMax(u)* .5)) * 100 + .5).."%"
+				return "|cff33FF33"..floor((remainingAbsorbAmount/(UnitHealthMax('player')* .75)) * 100 + .5).."%"
 		end
 	end
 end
