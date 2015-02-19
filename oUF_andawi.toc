@@ -19,6 +19,7 @@ Plugins\oUF_Fader.lua
 Plugins\oUF_Smooth.lua
 Plugins\oUF_HealPrediction.lua
 Plugins\oUF_DebuffHighlight.lua
+Plugins\oUF_WeakenedSoulHighlight.lua
 Plugins\oUF_AuraWatch.lua
 Plugins\oUF_Shadoworbs.lua
 Plugins\ResInfo.lua

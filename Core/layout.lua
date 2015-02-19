@@ -28,10 +28,7 @@ local OnLeave = function(self)
 			end
 end
 
-
-
-
-local Highlight = function(self) 
+local Highlight = function(self)
     self.Highlight = self:CreateTexture(nil, 'HIGHLIGHT')
 	self.Highlight:SetAllPoints(self)
 	self.Highlight:SetBlendMode('ADD')
@@ -55,10 +52,10 @@ local FocusTarget = function(self)
     end
 end
 
-local RaidSizeSwitcher = function(self)
-	
+--[[local RaidSizeSwitcher = function(self)
+
 	if InCombatLockdown() then return end
-	
+
 	local difficulty = GetRaidDifficultyID()
 	if difficulty == 3 or difficulty == 5 then -- 10 player
 		raidgrp1:SetAttribute("showRaid", true)
@@ -66,27 +63,27 @@ local RaidSizeSwitcher = function(self)
 		raidgrp3:SetAttribute("showRaid", false)
 		raidgrp4:SetAttribute("showRaid", false)
 		raidgrp5:SetAttribute("showRaid", false)
-		
+
 		raidgrp1:SetScale(1)
 		raidgrp2:SetScale(1)
 		raidgrp3:SetScale(1)
 		raidgrp4:SetScale(1)
 		raidgrp5:SetScale(1)
-		
+
 	elseif difficulty == 4 or difficulty == 6  or difficulty == 7 then -- 25 player
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
 		raidgrp3:SetAttribute("showRaid", true)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
-		
+
 		raidgrp1:SetScale(0.9)
 		raidgrp2:SetScale(0.9)
 		raidgrp3:SetScale(0.9)
 		raidgrp4:SetScale(0.9)
 		raidgrp5:SetScale(0.9)
 	end
-end
+end]]
 
 local GetTime = GetTime
 local floor, fmod = floor, math.fmod
@@ -137,12 +134,42 @@ local auraIcon = function(auras, button)
         button.glow:SetBackdrop({bgFile = "", edgeFile = "Interface\\AddOns\\Media\\glowTex",
         edgeSize = 5,insets = {left = 3,right = 3,top = 3,bottom = 3,},})
 	end
-   
+
 end
 
-local PostUpdateIcon = function(icons, unit, icon, index, offset)
+local PostUpdateHealth = function (health, unit, min, max)
+
+	local disconnnected = not UnitIsConnected(unit)
+	local dead = UnitIsDead(unit)
+	local ghost = UnitIsGhost(unit)
+
+	if disconnnected or dead or ghost then
+		health:SetValue(max)
+
+		if(disconnnected) then
+			health:SetStatusBarColor(0,0,0,0.6)
+		elseif(ghost) then
+			health:SetStatusBarColor(1,1,1,0.3)
+		elseif(dead) then
+			health:SetStatusBarColor(1,0,0,0.8)
+		end
+	else
+		health:SetValue(min)
+		if(unit == 'vehicle') then
+			health:SetStatusBarColor(22/255, 106/255, 44/255)
+		end
+	end
+
+
+
+end
+
+
+local PostUpdateIcon = function(self, unit, icon, index, offset)
 	local name, _, _, _, dtype, duration, expirationTime, unitCaster = UnitAura(unit, index, icon.filter)
 
+	
+	
 	local texture = icon.icon
 	if icon.isPlayer or UnitIsFriend('player', unit) or not icon.isDebuff then
 		texture:SetDesaturated(false)
@@ -150,20 +177,18 @@ local PostUpdateIcon = function(icons, unit, icon, index, offset)
 		texture:SetDesaturated(true)
 	end
 
-		
 	if not cfg.border then
 		if icon.isDebuff then
 		    local r,g,b = icon.overlay:GetVertexColor()
 		    icon.glow:SetBackdropBorderColor(r,g,b,1)
-	    else 
+	    else
 		    icon.glow:SetBackdropBorderColor(0,0,0,1)
 	    end
     end
-		
+
     icon.duration = duration
     icon.expires = expirationTime
 
-    
 end
 
 local CustomFilter = function(icons, ...)
@@ -182,7 +207,7 @@ local CustomFilter = function(icons, ...)
 end
 
 local PostAltUpdate = function(self, min, cur, max)
-    local per = math.floor((cur/max)*100)		
+    local per = math.floor((cur/max)*100)
 	if per < 30 then
 		self:SetStatusBarColor(0, 1, 0)
 	elseif per < 60 then
@@ -193,7 +218,7 @@ local PostAltUpdate = function(self, min, cur, max)
 end
 
 local UpdateComboPoint = function(self, event, unit)
-	if(unit == 'pet') then return end	
+	if(unit == 'pet') then return end
 	local cpoints = self.CPoints
 	local cp
 	if (UnitHasVehicleUI("player") or UnitHasVehicleUI("vehicle")) then
@@ -209,23 +234,23 @@ local UpdateComboPoint = function(self, event, unit)
 			cpoints[i]:SetAlpha(0.2)
 		end
 	end
-		
+
 	if UnitExists("target") and UnitCanAttack("player", "target") and (not UnitIsDead("target")) then
 		for i=1, 5 do
 			cpoints:Show()
 		end
-			
+
 	else
 		for i=1, 5 do
 			cpoints:Hide()
 		end
-			
+
 	end
 end
 
 local AWIcon = function(AWatch, icon, spellID, name, self)			--AuraWatch
-	
-	if icon.Class then 
+
+	if icon.Class then
 		local classcolor = RAID_CLASS_COLORS[icon.Class]
 		local r,g,b = classcolor.r,classcolor.g,classcolor.b
 		--print(icon.Class)
@@ -234,75 +259,75 @@ local AWIcon = function(AWatch, icon, spellID, name, self)			--AuraWatch
 
 	icon:SetBackdrop(backdrop_1px)
 
-	if spellID == 6788 then 
+	if spellID == 6788 then
 		icon:SetBackdropColor(1,0,0,0.75)
 	else
 		icon:SetBackdropColor(0,0,0,0.85)
 	end
-	
+
 	icon.cd:SetReverse(true)
 
 end
 
 local CustomDebuffFilter = function(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
-	
+
 	if not cfg.debuffFilter[name] then
 		return true		-- true = visible
 	end
-		
+
 end
 
 local createAuraWatch = function(self, unit)
 	if cfg.showAuraWatch then
-		
+
 		local auras = CreateFrame("Frame", nil, self)
 		auras:SetAllPoints(self.Health)
 		auras.onlyShowPresent = true
 		auras.icons = {}
 		auras.hideCooldown = true			-- org. AuraWatch cd frame will overlap each other - thus create own frame for this
 		auras:SetFrameStrata('HIGH')
-		
+
 		for i, v in pairs(cfg.spellIDs) do
-		
+
 			if (v[7] == class) or (v[7] == 'GENERIC') then
 				local icon = CreateFrame("Frame", nil, auras)
 				icon.spellID = v[1]
 				icon:SetSize(v[2], v[2])
 				icon:SetFrameLevel(i)
-				
+
 				if v[3] then
 					icon:SetPoint('CENTER', self, 'LEFT', v[3], v[4])
 				else
 					icon:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -7 * i, 0)
 				end
-		
-				icon.anyUnit = v[5] 
-				
+
+				icon.anyUnit = v[5]
+
 				local name, _, image = GetSpellInfo(v[1])
 				local tex = icon:CreateTexture(nil, "ARTWORK")
 				tex:SetTexCoord(.07, .93, .07, .93)
-				
+
 				tex:SetAllPoints(icon)
 				tex:SetTexture(image)
-				
+
 				icon.icon = tex
-				
-				if v[6] then icon.icon:SetAlpha(v[6]) end		
-				
+
+				if v[6] then icon.icon:SetAlpha(v[6]) end
+
 				icon.hideCooldown = true		-- org. AuraWatch cd frame will overlap each other - thus create own frame for this
-				
+
 				local cd = CreateFrame("Cooldown", nil, icon, "CooldownFrameTemplate")
 				cd:SetAllPoints(icon)
 				cd:SetFrameLevel(i)
 				icon.cd = cd
-			
+
 				if v[8] then icon.Class = v[8] end
-			
+
 				auras.icons[v[1]] = icon
 			end
-			
+
 			auras.PostCreateIcon = AWIcon
-			
+
 		end
 		self.AuraWatch = auras
 	end
@@ -314,8 +339,8 @@ local RaidIcon = function(self)
 	ricon:SetTexture(cfg.raidIcons)
 	self.RaidIcon = ricon
 end
-    
-local Resurrect = function(self) 
+
+local Resurrect = function(self)
     res = CreateFrame('Frame', nil, self)
 	res:SetSize(15, 15)
 	res:SetPoint('CENTER', self)
@@ -329,32 +354,32 @@ local Resurrect = function(self)
 	self.ResurrectIcon = res
 end
 
-local PhanxResurrect = function(self) 
+local PhanxResurrect = function(self)
 	self.ResInfo = self.Health:CreateFontString(nil, "OVERLAY")
 	self.ResInfo:SetPoint("CENTER")
 end
 
-local Healcomm = function(self) 
-	
+local Healcomm = function(self)
+
 	local mhpb = createStatusbar(self.Health, cfg.texture, nil, nil, self:GetWidth(), 0.33, 0.59, 0.33, 0.75)
 	mhpb:SetPoint('TOPLEFT', self.Health:GetStatusBarTexture(), 'TOPRIGHT', 0, -1)
 	mhpb:SetHeight(self.Health:GetHeight()*0.5)
 	mhpb:SetStatusBarColor(0, 1, 0, 0.33)
-	
+
 	local ohpb = createStatusbar(self.Health, cfg.texture, nil, nil, self:GetWidth(), 0.33, 0.59, 0.33, 0.75)
 	ohpb:SetPoint('BOTTOMLEFT', self.Health:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 1)
 	ohpb:SetHeight(self.Health:GetHeight()*0.5)
 	ohpb:SetStatusBarColor(0, 1, 0, 0.25)
-	
+
 	self.HealPrediction = {
 		myBar = mhpb,
 		otherBar = ohpb,
 		maxOverflow = 1.25,
 	}
-	
+
 	self.MyHealBar = mhpb
 	self.OtherHealBar = ohpb
-	
+
 end
 
 --**************
@@ -365,7 +390,7 @@ local AddHealPredictionBar = function(self)
 	local absorb = health:CreateTexture(nil, "OVERLAY")
 	absorb:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT', 0, -1)
 	absorb:SetVertexColor(0.41,	0.80, 0.94, 0.33)
-	
+
 	local mhpb = health:CreateTexture(nil, "OVERLAY")
 	mhpb:SetTexture(cfg.texture)
 	mhpb:SetPoint('TOPLEFT', self.Health:GetStatusBarTexture(), 'TOPRIGHT', 0, -1)
@@ -395,7 +420,7 @@ end
 --**************
 
 
-local Setfocus = function(self) 
+local Setfocus = function(self)
 	local ModKey = 'Shift'
     local MouseButton = 1
     local key = ModKey .. '-type' .. (MouseButton or '')
@@ -407,25 +432,20 @@ local Setfocus = function(self)
     end
 end
 
-local Portraits = function(self) 
+local Portraits = function(self)
     self.Portrait = CreateFrame("PlayerModel", nil, self)
 	self.Portrait:SetAllPoints(self.Health)
 	self.Portrait:SetAlpha(0.2)
 	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
-end   
+end
 
 local Shared = function(self, unit)
 
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
-	
-	
-	
-	
-	
-	
+
     self.framebd = framebd(self, self)		--extra Frame Backdrop...
-	
+
     local h = createStatusbar(self, cfg.texture, nil, nil, nil, cfg.Color.Health.r, cfg.Color.Health.g, cfg.Color.Health.b, 1)
     h:SetPoint"TOP"
 	h:SetPoint"LEFT"
@@ -434,9 +454,9 @@ local Shared = function(self, unit)
 	local hbg = h:CreateTexture(nil, "BACKGROUND")
     hbg:SetAllPoints(h)
     hbg:SetTexture(cfg.texture)
-   
+
     h.frequentUpdates = true
-	
+
 	if cfg.class_colorbars then
         h.colorClass = true
         h.colorReaction = true
@@ -444,41 +464,42 @@ local Shared = function(self, unit)
 	else
 		hbg:SetVertexColor(.5, .5, .5, .25)
     end
-	
+
 	if cfg.Smooth then h.Smooth = true end
-	
+
 	h.bg = hbg
     self.Health = h
 	h.PostUpdate = PostUpdateHealth
-
-		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.15, 0.15, 0.15}
-		self.Health.colorSmooth = true
 	
+	
+	oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.3, 0.3, 0.3}
+	self.Health.colorSmooth = true
+
     if not (unit == "targettarget" or unit == "pet" or unit == "focustarget") then
         local p = createStatusbar(self, cfg.texture, nil, nil, nil, 1, 1, 1, 1)
 		p:SetPoint"LEFT"
 		p:SetPoint"RIGHT"
-        p:SetPoint("BOTTOM", h, 0, -(cfg.power_height+1)) 
-		
+        p:SetPoint("BOTTOM", h, 0, -(cfg.power_height+1))
+
         p.frequentUpdates = true
-        
+
 	    if cfg.Smooth then p.Smooth = true end
 
         local pbg = p:CreateTexture(nil, "BACKGROUND")
         pbg:SetAllPoints(p)
         pbg:SetTexture(cfg.texture)
         pbg.multiplier = .2
-		
-		if cfg.class_colorbars then 
+
+		if cfg.class_colorbars then
             p.colorPower = true
         else
             p.colorClass = true
         end
-	
+
         p.bg = pbg
         self.Power = p
     end
-	
+
 	local l = h:CreateTexture(nil, "OVERLAY")
 	if (unit == "raid") then
 	    l:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -1, -4)
@@ -515,11 +536,11 @@ local Shared = function(self, unit)
         rc:SetPoint("CENTER", h)
 	end
 	self.ReadyCheck = rc
-	
+
 	RaidIcon(self)
 	Highlight(self)
 	Setfocus(self)
-	
+
 -- Arrows
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetAllPoints(self)
@@ -533,21 +554,23 @@ local Shared = function(self, unit)
 
 	self.freebarrow = frame
 	self.freebarrow:Hide()
-		
+
 	self.freebRange = range
 
 --DebuffHighlight
 	self.DebuffHighlight = cfg.DebuffHighlight
 	self.DebuffHighlightFilter = cfg.DebuffHighlightFilter
+
+	self.WeakenedSoulHighlight = cfg.WeakenedSoulHighlight
 	
-	self:SetScale(cfg.scale) 
+	self:SetScale(cfg.scale)
 end
 
 local UnitSpecific = {
     player = function(self, ...)
         Shared(self, ...)
-		
-		
+
+
 		--oUF_Fader plugin
 		self.FadeCasting = true
 		self.FadeCombat = true
@@ -559,28 +582,28 @@ local UnitSpecific = {
 		self.FadeMinAlpha = 0
 		self.FadeMaxAlpha = 1.0
 		--end
-		
-		
-		
+
+
+
 		self:SetSize(cfg.width, cfg.health_height+cfg.power_height+1)
 		self.Health:SetHeight(cfg.health_height)
 		self.Power:SetHeight(cfg.power_height)
 		self.unit = "player"
-		
+
 		if cfg.portraits then Portraits(self) end
-	
+
 	    if cfg.healcomm then Healcomm(self) end
-		
+
 		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         name:SetPoint("TOPLEFT", self.Health, 0, 6)
         name:SetJustifyH"LEFT"
-		
+
 		if cfg.class_colorbars then
 		    self:Tag(name, '[oUF_andawi:lvl] [long:name]')
 		else
 		    self:Tag(name, '[oUF_andawi:lvl] [oUF_andawi:color][long:name]')
 		end
-		
+
 		--[[local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         htext:SetPoint("RIGHT", self.Health, -2, -13)
 		htext.frequentUpdates = .1
@@ -588,8 +611,8 @@ local UnitSpecific = {
 		]]
 		self.RaidIcon:SetSize(23, 23)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 11)
-		
-			
+
+
 		if cfg.auras then
             local d = CreateFrame("Frame", nil, self)
 			d.size = 24
@@ -604,9 +627,9 @@ local UnitSpecific = {
             d.PostCreateIcon = auraIcon
             d.PostUpdateIcon = PostUpdateIcon
             d.CustomFilter = CustomFilter
-            self.Debuffs = d       
-        end			
-		
+            self.Debuffs = d
+        end
+
 		local ct = self.Health:CreateTexture(nil, 'OVERLAY')
         ct:SetSize(20, 20)
         ct:SetPoint('CENTER', self.Health)
@@ -616,13 +639,13 @@ local UnitSpecific = {
 	    r:SetPoint("BOTTOMLEFT", 0, -10)
 	    r:SetText("|cff5F9BFFR|r")
 	    self.Resting = r
-		
+
 		--[[local PvP = self.Health:CreateTexture(nil, 'OVERLAY')
         PvP:SetSize(28, 28)
         PvP:SetPoint('BOTTOMLEFT', self.Health, 'TOPRIGHT', -15, -20)
         self.PvP = PvP]]
-		
-        if cfg.specific_power then 
+
+        if cfg.specific_power then
 		    if (class == "PALADIN" or class == "MONK") then
                 local c
                 if class == "PALADIN" then
@@ -630,7 +653,7 @@ local UnitSpecific = {
 					c = numMax
                 elseif class == "MONK" then
 	                local numMax = UnitPowerMax("player", SPELL_POWER_LIGHT_FORCE)
-					c = numMax 							
+					c = numMax
                 end
 
                 local b = CreateFrame("Frame", nil, self)
@@ -642,7 +665,7 @@ local UnitSpecific = {
                 local i = c
                 for index = 1, c do
                     b[i] = createStatusbar(b, cfg.texture, nil, cfg.specific_power_height, (cfg.width+1)/c-1, 1, 1, 1, 1)
-				
+
 				    if i == c then
                         b[i]:SetPoint("RIGHT", b)
                     else
@@ -651,11 +674,11 @@ local UnitSpecific = {
 
                     if class == "PALADIN" then
                         local color = self.colors.power["HOLY_POWER"]
-                        b[i]:SetStatusBarColor(color[1], color[2], color[3])   
+                        b[i]:SetStatusBarColor(color[1], color[2], color[3])
 				    elseif class == "MONK" then
 				        local color = self.colors.power["LIGHT_FORCE"]
-                        b[i]:SetStatusBarColor(color[1], color[2], color[3]) 
-                    end 
+                        b[i]:SetStatusBarColor(color[1], color[2], color[3])
+                    end
 
                     b[i].bg = b[i]:CreateTexture(nil, "BACKGROUND")
                     b[i].bg:SetAllPoints(b[i])
@@ -666,7 +689,7 @@ local UnitSpecific = {
                 end
 
             end
-			    			
+
 			if class == "PRIEST" then
 			    sob = CreateFrame("Frame", self:GetName().."_ShadowOrbsBar", self)
 				sob:SetFrameStrata("LOW")
@@ -681,16 +704,16 @@ local UnitSpecific = {
 				    else
 					    sob[i]:SetPoint("LEFT", sob[i-1], "RIGHT", 1, 0)
 				    end
-				
+
 				    sob[i].bg = sob[i]:CreateTexture(nil, "BORDER")
                     sob[i].bg:SetAllPoints(sob[i])
                     sob[i].bg:SetTexture(cfg.texture)
                     sob[i].bg.multiplier = .2
-				
+
 				   self.ShadowOrbsBar = sob
 			    end
 		    end
-        
+
             if class == "DRUID" then
                 local ebar = CreateFrame("Frame", nil, self)
 				ebar:SetFrameStrata("LOW")
@@ -712,31 +735,31 @@ local UnitSpecific = {
                 ebar.Spark:SetAlpha(0.5)
                 ebar.Spark:SetHeight(26)
                 ebar.Spark:SetPoint("LEFT", sbar:GetStatusBarTexture(), "LEFT", -15, 0)
-				
+
 				ebar.Text = fs(ebar.SolarBar, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 0.8, 0.8, 0.8)
                 ebar.Text:SetPoint("CENTER", ebar)
                 self:Tag(ebar.Text, "[oUF_andawi:EclipseDirection]")
-					
+
 				self.EclipseBar = ebar
             end
-						
+
 		end
-		
+
 		if class == "DRUID" and cfg.DruidMana then
 		    local color = self.colors.power["MANA"]
 		    local DruidMana = createStatusbar(self, cfg.texture, nil, cfg.specific_power_height, cfg.width, color[1], color[2], color[3], 1)
 			DruidMana:SetFrameStrata("LOW")
             DruidMana:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -1)
 		    DruidMana.bd = framebd(DruidMana, DruidMana)
-			
+
             local bg = DruidMana:CreateTexture(nil, 'BACKGROUND')
             bg:SetAllPoints(DruidMana)
             bg.multiplier = 0.2
-			
+
             self.DruidMana = DruidMana
             self.DruidMana.bg = bg
 		end
-		
+
 		if cfg.AltPowerBar then
 	       local altp = createStatusbar(self, cfg.texture, nil, cfg.AltPowerBar_Height, cfg.AltPowerBar_Width, 1, 1, 1, 1)
            altp:SetPoint(unpack(cfg.AltPowerBar_pos))
@@ -753,28 +776,26 @@ local UnitSpecific = {
 	    end
     end,
 
+-- TARGET LAYOUT
+
     target = function(self, ...)
 
 		Shared(self, ...)
-		
 
-		
-		
-		
 		self:SetSize(cfg.width, cfg.health_height+cfg.power_height+1)
 		self.Health:SetHeight(cfg.health_height)
 		self.Power:SetHeight(cfg.power_height)
 		self.unit = "target"
 
 		if cfg.portraits then Portraits(self) end
-		
+
 		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         name:SetPoint("TOPLEFT", self.Health, 0, 6)
         name:SetJustifyH"LEFT"
-		
+
 		if cfg.class_colorbars then
 		    self:Tag(name, '[oUF_andawi:lvl] [long:name]')
-		else 
+		else
 		    self:Tag(name, '[oUF_andawi:lvl] [oUF_andawi:color][long:name]')
 		end
 
@@ -782,10 +803,10 @@ local UnitSpecific = {
         htext:SetPoint("BOTTOMRIGHT", self.Health, -2, -15)
 		htext.frequentUpdates = .1
         self:Tag(htext, '[oUF_andawi:hp][oUF_andawi:pp]')
-		
+
 		self.RaidIcon:SetSize(23, 23)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 11)
-		
+
 		if cfg.auras then
             local b = CreateFrame("Frame", nil, self)
 			b.size = 24
@@ -793,7 +814,7 @@ local UnitSpecific = {
 		    b.num = cfg.target_buffs_num
             b:SetSize(b.size*4+b.spacing*3, b.size)
 		    b:SetPoint("TOPLEFT", self, "TOPRIGHT", 50, 25)
-            b.initialAnchor = "TOPLEFT" 
+            b.initialAnchor = "TOPLEFT"
             b["growth-y"] = "DOWN"
             b.PostCreateIcon = auraIcon
             b.PostUpdateIcon = PostUpdateIcon
@@ -812,9 +833,9 @@ local UnitSpecific = {
             d.PostCreateIcon = auraIcon
             d.PostUpdateIcon = PostUpdateIcon
             d.CustomFilter = CustomFilter
-            self.Debuffs = d       
+            self.Debuffs = d
         end
-		
+
 		if cfg.specific_power then
 		    if class == "DRUID" or class == "ROGUE" then
 		        local cp = CreateFrame("Frame", nil, self)
@@ -826,7 +847,7 @@ local UnitSpecific = {
 		        local i = c
                 for index = 1, c do
                     cp[i] = createStatusbar(cp, cfg.texture, nil, cfg.specific_power_height, (cfg.width+1)/c-1, color[1], color[2], color[3], 1)
-				
+
                     if i == c then
                         cp[i]:SetPoint("RIGHT", cp)
                     else
@@ -840,12 +861,12 @@ local UnitSpecific = {
 
                     i=i-1
                 end
-			
+
 		        self.CPoints = cp
 		        self.CPoints.Override = UpdateComboPoint
 			end
 		end
-		
+
 		local q = fs(self.Health, "OVERLAY", cfg.font, 22, cfg.fontflag, 1, 1, 1)
 	    q:SetPoint('TOP', self.Health,'RIGHT', -5, -7)
 	    q:SetText("|cff8AFF30!|r")
@@ -855,24 +876,32 @@ local UnitSpecific = {
         ph:SetSize(24, 24)
         ph:SetPoint('CENTER', self.Health, 'BOTTOMLEFT', 3, -3)
         self.PhaseIcon = ph
-		
+
 		--[[local PvP = self.Health:CreateTexture(nil, 'OVERLAY')
         PvP:SetSize(28, 28)
         PvP:SetPoint('BOTTOMLEFT', self.Health, 'TOPRIGHT', -15, -20)
         self.PvP = PvP]]
-		
+
+    -- Clarity of Will
+    self.AuraStatusCoW = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
+    self.AuraStatusCoW:ClearAllPoints()
+    self.AuraStatusCoW:SetPoint("BOTTOMRIGHT", -10, 1)
+    self.AuraStatusCoW.frequentUpdates = 0.1
+    self.AuraStatusCoW:SetAlpha(.6)
+    self:Tag(self.AuraStatusCoW, "[oUF_andawi:CoW]")
+
     end,
 
     focus = function(self, ...)
         Shared(self, ...)
-		
+
 		self:SetSize(cfg.width, cfg.health_height+cfg.power_height+1)
 		self.Health:SetHeight(cfg.health_height)
 		self.Power:SetHeight(cfg.power_height)
 		self.unit = "focus"
-		
+
 		if cfg.healcomm then Healcomm(self) end
-		
+
 		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         name:SetPoint("LEFT", self.Health, 4, 0)
         name:SetJustifyH"LEFT"
@@ -881,35 +910,60 @@ local UnitSpecific = {
 		else
 		    self:Tag(name, '[oUF_andawi:lvl] [oUF_andawi:color][long:name]')
 		end
-		
+
 		local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
-        htext:SetPoint("RIGHT", self.Health, -2, 0)
+        htext:SetPoint("RIGHT", self.Health, -2, 5)
 		htext.frequentUpdates = .1
         self:Tag(htext, '[oUF_andawi:hp][oUF_andawi:pp]')
-		
+
 		self.RaidIcon:SetSize(23, 23)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 11)
-		
-        --[[if cfg.auras then 
-            local a = CreateFrame("Frame", nil, self)
-			a.size = 24
-			a.spacing = 4
-			a:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 1, 7)
-            a:SetSize(cfg.width, a.size)
-            a.gap = true
-            a.initialAnchor = "TOPLEFT"
-			a["growth-y"] = "UP"
-            a.PostCreateIcon = auraIcon
-            a.PostUpdateIcon = PostUpdateIcon
-            self.Auras = a
-        end]]
+
+      -- Clarity of Will
+      self.AuraStatusCoW = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
+      self.AuraStatusCoW:ClearAllPoints()
+      self.AuraStatusCoW:SetPoint("BOTTOMRIGHT", -10, 1)
+      self.AuraStatusCoW.frequentUpdates = 0.1
+      self.AuraStatusCoW:SetAlpha(.6)
+      self:Tag(self.AuraStatusCoW, "[oUF_andawi:CoW]")
+
+
+      if cfg.auras then
+        local b = CreateFrame("Frame", nil, self)
+        b.size = 24
+        b.spacing = 4
+        b.num = cfg.target_buffs_num
+        b:SetSize(b.size*4+b.spacing*3, b.size)
+        b:SetPoint("TOPLEFT", self, "TOPRIGHT", 50, 25)
+        b.initialAnchor = "TOPLEFT"
+        b["growth-y"] = "DOWN"
+        b.PostCreateIcon = auraIcon
+        b.PostUpdateIcon = PostUpdateIcon
+        b.onlyShowPlayer = true
+        self.Buffs = b
+
+        local d = CreateFrame("Frame", nil, self)
+        d.size = 24
+        d.spacing = 4
+        d.num = cfg.target_debuffs_num
+        d:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 1, 8)
+        d:SetSize(cfg.width, d.size)
+        d.initialAnchor = "TOPRIGHT"
+        d["growth-x"] = "LEFT"
+        d["growth-y"] = "UP"
+        d.onlyShowPlayer = cfg.onlyShowPlayer
+        d.PostCreateIcon = auraIcon
+        d.PostUpdateIcon = PostUpdateIcon
+        d.CustomFilter = CustomFilter
+        self.Debuffs = d
+      end
     end,
 
     pet = function(self, ...)
         Shared(self, ...)
-		
+
 		self:SetSize(cfg.pet_width, cfg.pet_height)
-		
+
 		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         name:SetPoint("CENTER", self.Health)
 		if cfg.class_colorbars then
@@ -917,11 +971,11 @@ local UnitSpecific = {
 		else
 		    self:Tag(name, '[oUF_andawi:color][short:name]')
 		end
-	    
+
 		self.RaidIcon:SetSize(20, 20)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 10)
-		
-        if cfg.auras then 
+
+        if cfg.auras then
             local d = CreateFrame("Frame", nil, self)
 			d.size = 24
 			d.spacing = 4
@@ -938,9 +992,9 @@ local UnitSpecific = {
 
     targettarget = function(self, ...)
 	    Shared(self, ...)
-				 
+
 	    self:SetSize(cfg.pet_width, cfg.pet_height)
-		
+
 		local name = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         name:SetPoint("CENTER", self.Health)
 		if cfg.class_colorbars then
@@ -948,14 +1002,14 @@ local UnitSpecific = {
 		else
 		    self:Tag(name, '[oUF_andawi:color][short:name]')
 		end
-		
+
 		self.RaidIcon:SetSize(20, 20)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 0, 10)
-		 
-		if cfg.healcomm then  AddHealPredictionBar(self) end 
-		
---[[		
-        if cfg.auras then 
+
+		if cfg.healcomm then  AddHealPredictionBar(self) end
+
+--[[
+        if cfg.auras then
             local d = CreateFrame("Frame", nil, self)
 			d.size = 24
 			d.spacing = 4
@@ -982,7 +1036,7 @@ end
 local spawnHelper = function(self, unit, ...)
     if(UnitSpecific[unit]) then
         self:SetActiveStyle('andawi - ' .. unit:gsub("^%l", string.upper))
-    elseif(UnitSpecific[unit:match('[^%d]+')]) then 
+    elseif(UnitSpecific[unit:match('[^%d]+')]) then
         self:SetActiveStyle('andawi - ' .. unit:match('[^%d]+'):gsub("^%l", string.upper))
     else
         self:SetActiveStyle'andawi'
@@ -1004,6 +1058,5 @@ oUF:Factory(function(self)
     --spawnHelper(self, "focustarget", "LEFT", "oUF_andawiFocus", cfg.unit_positions.Focustarget.x, cfg.unit_positions.Focustarget.y)
     spawnHelper(self, "pet", "LEFT", "oUF_andawiPlayer", cfg.unit_positions.Pet.x, cfg.unit_positions.Pet.y)
 print ('spawn done')
-   
-end)
 
+end)

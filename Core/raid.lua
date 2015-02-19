@@ -1,4 +1,4 @@
--- raid layout 
+-- raid layout
 local name, ns = ...
 local cfg = ns.cfg
 local _, class = UnitClass('player')
@@ -39,12 +39,12 @@ local range = {
 	ns.arrowmouseover = true
 	ns.arrowmouseoveralways = false
 
-local Highlight = function(self) 
+local Highlight = function(self)
     self.Highlight = self:CreateTexture(nil, 'HIGHLIGHT')
 	self.Highlight:SetAllPoints(self)
 	self.Highlight:SetBlendMode('ADD')
 	self.Highlight:SetTexture(cfg.highlightBorder)
-	self.Highlight:SetVertexColor(1, 1, 1, 0.25)
+	self.Highlight:SetVertexColor(1, 1, 1, 0.05)
 end
 
 local ChangedTarget = function(self)
@@ -57,9 +57,9 @@ end
 
 
 local RaidSizeSwitcher = function(self)
-	
+
 	if InCombatLockdown() then return end
-	
+
 
 	local difficulty = GetRaidDifficultyID()
 	if difficulty == 3 or difficulty == 5 then -- 10 player
@@ -68,20 +68,14 @@ local RaidSizeSwitcher = function(self)
 		raidgrp3:SetAttribute("showRaid", false)
 		raidgrp4:SetAttribute("showRaid", false)
 		raidgrp5:SetAttribute("showRaid", false)
-		
-		--[[raidgrp1:SetScale(cfg.raidScale)
-		raidgrp2:SetScale(cfg.raidScale)
-		raidgrp3:SetScale(cfg.raidScale)
-		raidgrp4:SetScale(cfg.raidScale)
-		raidgrp5:SetScale(cfg.raidScale)]]
-		
+
 	elseif difficulty == 4 or difficulty == 6  or difficulty == 7 then -- 25 player
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
 		raidgrp3:SetAttribute("showRaid", true)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
-	
+
 	elseif difficulty == 16 then -- mythic
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
@@ -91,23 +85,23 @@ local RaidSizeSwitcher = function(self)
 		raidgrp6:SetAttribute("showRaid", false)
 		raidgrp7:SetAttribute("showRaid", false)
 		raidgrp8:SetAttribute("showRaid", false)
-	
+
 	elseif difficulty == 17 then -- LFR
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
 		raidgrp3:SetAttribute("showRaid", true)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
-	
-		
-	else 
+
+
+	else
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
 		raidgrp3:SetAttribute("showRaid", true)
 		raidgrp4:SetAttribute("showRaid", true)
 		raidgrp5:SetAttribute("showRaid", true)
-		
-		
+
+
 	end
 end
 
@@ -145,8 +139,38 @@ local auraIcon = function(auras, button)
         button.glow:SetBackdrop({bgFile = "", edgeFile = "Interface\\AddOns\\Media\\glowTex",
         edgeSize = 5,insets = {left = 3,right = 3,top = 3,bottom = 3,},})
 	end
-   
+
 end
+
+
+local PostUpdateHealth = function (health, unit, min, max)
+
+	local disconnnected = not UnitIsConnected(unit)
+	local dead = UnitIsDead(unit)
+	local ghost = UnitIsGhost(unit)
+
+	if disconnnected or dead or ghost then
+		health:SetValue(max)
+
+		if(disconnnected) then
+			health:SetStatusBarColor(0,0,0,0.6)
+		elseif(ghost) then
+			health:SetStatusBarColor(1,1,1,0.3)
+		elseif(dead) then
+			health:SetStatusBarColor(1,0,0,0.8)
+		end
+	else
+		health:SetValue(min)
+		if(unit == 'vehicle') then
+			health:SetStatusBarColor(22/255, 106/255, 44/255)
+		end
+	end
+
+
+
+end
+
+
 
 local PostUpdateIcon = function(icons, unit, icon, index, offset)
 	local name, _, _, _, dtype, duration, expirationTime, unitCaster = UnitAura(unit, index, icon.filter)
@@ -158,20 +182,20 @@ local PostUpdateIcon = function(icons, unit, icon, index, offset)
 		texture:SetDesaturated(true)
 	end
 
-		
+
 	if not cfg.border then
 		if icon.isDebuff then
 		    local r,g,b = icon.overlay:GetVertexColor()
-		    icon.glow:SetBackdropBorderColor(r,g,b,1)
-	    else 
+		    icon.glow:SetBackdropBorderColor(r,g,b,0.75)
+	    else
 		    icon.glow:SetBackdropBorderColor(0,0,0,1)
 	    end
     end
-		
+
     icon.duration = duration
     icon.expires = expirationTime
 
-    
+
 end
 
 local CustomFilter = function(icons, ...)
@@ -191,19 +215,19 @@ end
 
 
 local CustomDebuffFilter = function(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
-	
+
 	if not cfg.debuffFilter[name] then
 		return true		-- true = visible
 	end
-		
+
 end
 
 ----------------------------------------------------------------------------------------
 --	AuraWatch
 ----------------------------------------------------------------------------------------
 local AWIcon = function(AWatch, icon, spellID, name, self)			--AuraWatch
-	
-	if icon.Class then 
+
+	if icon.Class then
 		local classcolor = RAID_CLASS_COLORS[icon.Class]
 		local r,g,b = classcolor.r,classcolor.g,classcolor.b
 		--print(icon.Class)
@@ -212,69 +236,69 @@ local AWIcon = function(AWatch, icon, spellID, name, self)			--AuraWatch
 
 	icon:SetBackdrop(backdrop_1px)
 
-	if spellID == 6788 then 		--weakend soul
-		icon:SetBackdropColor(1,0,0,0.60)
+	if spellID == 6788 then 		--weakened soul
+		icon:SetBackdropColor(1,0,0,0.85)
 	else
 		icon:SetBackdropColor(0,0,0,0.85)
 	end
-	
+
 	icon.cd:SetReverse(true)
 
 end
 
 local createAuraWatch = function(self, unit)
 	if cfg.showAuraWatch then
-		
+
 		local auras = CreateFrame("Frame", nil, self.Health)
 		auras:SetAllPoints(self.Health)
 		auras.onlyShowPresent = true
 		auras.icons = {}
 		auras.customIcons = true		-- org. AuraWatch cd frame will overlap each other - thus create own frame for this
 		auras:SetFrameStrata('HIGH')
-		
+
 		for i, v in pairs(cfg.spellIDs) do
-		
+
 			if (v[7] == class) or (v[7] == 'GENERIC') then
 				local icon = CreateFrame("Frame", nil, auras)
 				icon.spellID = v[1]
 				icon:SetSize(v[2], v[2])
 				icon:SetFrameLevel(i)
-				
+
 				if v[3] then
 					icon:SetPoint('CENTER', self, 'LEFT', v[3], v[4])
 				else
 					icon:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -7 * i, 0)
 				end
-		
-				icon.anyUnit = v[5] 
-				
+
+				icon.anyUnit = v[5]
+
 				local name, _, image = GetSpellInfo(v[1])
 				local tex = icon:CreateTexture(nil, "ARTWORK")
 				tex:SetTexCoord(.07, .93, .07, .93)
-				
+
 				tex:SetAllPoints(icon)
 				tex:SetTexture(image)
-				
+
 				icon.icon = tex
-				
-				if v[6] then icon.icon:SetAlpha(v[6]) end		
-				
+
+				if v[6] then icon.icon:SetAlpha(v[6]) end
+
 				local cd = CreateFrame("Cooldown", nil, icon, "CooldownFrameTemplate")
 				cd:SetAllPoints(icon)
 				--cd:SetFrameLevel(i)
 				icon.cd = cd
-				
+
 				local count = fs(icon, "OVERLAY", cfg.font_Pixel13, 13, "THINOUTLINE", 1, 1, 1)
 				count:SetPoint("CENTER", icon, "BOTTOMRIGHT", -2,5)
 				icon.count = count
-				
+
 				if v[8] then icon.Class = v[8] end
-			
+
 				auras.icons[v[1]] = icon
 			end
-			
+
 			auras.PostCreateIcon = AWIcon
-			
+
 		end
 		self.AuraWatch = auras
 	end
@@ -286,8 +310,8 @@ local RaidIcon = function(self)
 	ricon:SetTexture(cfg.raidIcons)
 	self.RaidIcon = ricon
 end
-    
-local Resurrect = function(self) 
+
+local Resurrect = function(self)
     res = CreateFrame('Frame', nil, self)
 	res:SetSize(15, 15)
 	res:SetPoint('CENTER', self)
@@ -301,32 +325,32 @@ local Resurrect = function(self)
 	self.ResurrectIcon = res
 end
 
-local PhanxResurrect = function(self) 
+local PhanxResurrect = function(self)
 	self.ResInfo = self.Health:CreateFontString(nil, "OVERLAY")
 	self.ResInfo:SetPoint("CENTER")
 end
 
-local Healcomm = function(self) 
-	
+local Healcomm = function(self)
+
 	local mhpb = createStatusbar(self.Health, cfg.texture, nil, nil, self:GetWidth(), 0.33, 0.59, 0.33, 0.75)
 	mhpb:SetPoint('TOPLEFT', self.Health:GetStatusBarTexture(), 'TOPRIGHT', 0, -1)
 	mhpb:SetHeight(self.Health:GetHeight()*0.5)
 	mhpb:SetStatusBarColor(0, 1, 0, 0.33)
-	
+
 	local ohpb = createStatusbar(self.Health, cfg.texture, nil, nil, self:GetWidth(), 0.33, 0.59, 0.33, 0.75)
 	ohpb:SetPoint('BOTTOMLEFT', self.Health:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 1)
 	ohpb:SetHeight(self.Health:GetHeight()*0.5)
 	ohpb:SetStatusBarColor(0, 1, 0, 0.25)
-	
+
 	self.HealPrediction = {
 		myBar = mhpb,
 		otherBar = ohpb,
 		maxOverflow = 1.25,
 	}
-	
+
 	self.MyHealBar = mhpb
 	self.OtherHealBar = ohpb
-	
+
 end
 
 ----------------------------------------------------------------------------------------
@@ -339,7 +363,7 @@ local AddHealPredictionBar = function(self)
 	local absorb = health:CreateTexture(nil, "OVERLAY")
 	absorb:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT', 0, -1)
 	absorb:SetVertexColor(0.41,	0.80, 0.94, 0.33)
-	
+
 	local mhpb = health:CreateTexture(nil, "OVERLAY")
 	mhpb:SetTexture(cfg.texture)
 	mhpb:SetPoint('TOPLEFT', self.Health:GetStatusBarTexture(), 'TOPRIGHT', 0, -1)
@@ -371,62 +395,64 @@ local raid_heal = function(self, unit)
 
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
-	
+
     self.framebd = framebd(self, self)		--extra Frame Backdrop...
-	
+
     local h = createStatusbar(self, cfg.texture, nil, nil, nil, cfg.Color.Health.r, cfg.Color.Health.g, cfg.Color.Health.b, 1)
     h:SetPoint"TOP"
 	h:SetPoint"LEFT"
 	h:SetPoint"RIGHT"
-
+	
 	local hbg = h:CreateTexture(nil, "BACKGROUND")
     hbg:SetAllPoints(h)
     hbg:SetTexture(cfg.texture)
-   
+
     h.frequentUpdates = true
-	
+
 	if cfg.class_colorbars then
         h.colorClass = true
         h.colorReaction = true
 		hbg.multiplier = .2
 	else
-		hbg:SetVertexColor(.5, .5, .5, .25)
+		hbg:SetVertexColor(.5, .5, .5, .15)
     end
-	
+
 	if cfg.Smooth then h.Smooth = true end
 	
+			
 	h.bg = hbg
     self.Health = h
+
 	h.PostUpdate = PostUpdateHealth
 
-		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.15, 0.15, 0.15}
+		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.3, 0.3, 0.3}
 		self.Health.colorSmooth = true
-	
+
     if not (unit == "targettarget" or unit == "pet" or unit == "focustarget") then
         local p = createStatusbar(self, cfg.texture, nil, nil, nil, 1, 1, 1, 1)
 		p:SetPoint"LEFT"
 		p:SetPoint"RIGHT"
-        p:SetPoint("BOTTOM", h, 0, -(cfg.power_height+1)) 
-		
+        p:SetPoint("BOTTOM", h, 0, -(cfg.power_height+1))
+
         p.frequentUpdates = true
-        
+
 	    if cfg.Smooth then p.Smooth = true end
 
         local pbg = p:CreateTexture(nil, "BACKGROUND")
         pbg:SetAllPoints(p)
         pbg:SetTexture(cfg.texture)
         pbg.multiplier = .2
-		
-		if cfg.class_colorbars then 
+
+		if cfg.class_colorbars then
             p.colorPower = true
         else
             p.colorClass = true
         end
-	
+
         p.bg = pbg
         self.Power = p
     end
-	
+
 	local l = h:CreateTexture(nil, "OVERLAY")
 	if (unit == "raid") then
 	    l:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -1, -4)
@@ -463,10 +489,10 @@ local raid_heal = function(self, unit)
         rc:SetPoint("CENTER", h)
 	end
 	self.ReadyCheck = rc
-	
+
 	RaidIcon(self)
 	Highlight(self)
-	
+
 -- Arrows
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetAllPoints(self)
@@ -480,40 +506,40 @@ local raid_heal = function(self, unit)
 
 	self.freebarrow = frame
 	self.freebarrow:Hide()
-		
+
 	self.freebRange = range
 
 --DebuffHighlight
 	self.DebuffHighlight = cfg.DebuffHighlight
 	self.DebuffHighlightFilter = cfg.DebuffHighlightFilter
-	
+
 	self.Health:ClearAllPoints()
 		self.Power:ClearAllPoints()
-		
+
 		self.Health:SetHeight(cfg.raid_health_height)
 		self.Power:SetHeight(cfg.raid_power_height)
 
-		self.Power:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 1, 0) 
+		self.Power:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 1, 0)
 		self.Power:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -1, 0)
-		
+
 		self.Health:SetPoint('BOTTOMLEFT', self.Power, 1, cfg.raid_power_height+1)
 		self.Health:SetPoint('BOTTOMRIGHT', self.Power, -1, cfg.raid_power_height+1)
 		self.Health:SetHeight(cfg.raid_health_height/2)
-		
-		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.15, 0.15, 0.15}
+
+		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.3, 0.3, 0.3}
 		self.Health.colorSmooth = true
 		self.Health.colorDisconnected = true
-		
+
 		self.DebuffHighlight = self.Health:CreateTexture(nil, 'OVERLAY')
 		self.DebuffHighlight:SetAllPoints(self.Health)
 		self.DebuffHighlight:SetTexture(cfg.highlightBorder)
 		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 		self.DebuffHighlight:SetBlendMode('ADD')
 		self.DebuffHighlightAlpha = 1
-		
-		
+
+
 		if class == "PRIEST" then
-		
+
 		-- Divine Aegis Shield Value
 		--[[
 			self.AuraStatusDA = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
@@ -523,7 +549,7 @@ local raid_heal = function(self, unit)
 			self.AuraStatusDA:SetAlpha(.6)
 			self:Tag(self.AuraStatusDA, "[oUF_andawi:DA]")
 		]]
-		
+
 		-- Spirit Shell Shield Value
 			self.AuraStatusSS = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusSS:ClearAllPoints()
@@ -531,8 +557,8 @@ local raid_heal = function(self, unit)
 			self.AuraStatusSS.frequentUpdates = 0.1
 			self.AuraStatusSS:SetAlpha(.6)
 			self:Tag(self.AuraStatusSS, "[oUF_andawi:SS]")
-		
-		
+
+
 		-- Clarity of Will
 			self.AuraStatusCoW = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize, cfg.fontflag, 1, 1, 1)
 			self.AuraStatusCoW:ClearAllPoints()
@@ -540,18 +566,20 @@ local raid_heal = function(self, unit)
 			self.AuraStatusCoW.frequentUpdates = 0.1
 			self.AuraStatusCoW:SetAlpha(.6)
 			self:Tag(self.AuraStatusCoW, "[oUF_andawi:CoW]")
-		
-		
-		
+
 		-- Power Word Fortitude Indicator
 			self.AuraStatusPWF = self.Health:CreateFontString(nil, "OVERLAY")
 			self.AuraStatusPWF:SetPoint("BOTTOMRIGHT", -0, 1)
 			self.AuraStatusPWF:SetJustifyH("RIGHT")
 			self.AuraStatusPWF:SetFont(cfg.squares, 10, "OUTLINE")
 			self:Tag(self.AuraStatusPWF, "[oUF_andawi:fort]")
+			
+			
+			
+			
 		end
 
---debug			
+--debug
 		local name = fs(self.Health, "OVERLAY", cfg.font_Pixel8, cfg.pixelFontSize)
 		name:SetPoint("TOPLEFT", self.Health, 3, -3)
 	    name:SetJustifyH"LEFT"
@@ -566,17 +594,17 @@ local raid_heal = function(self, unit)
         local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         htext:SetPoint("RIGHT", self.Health, 0, -8)
 		--htext.frequentUpdates = true
-        self:Tag(htext, '[oUF_andawi:info]')		
-		
+        self:Tag(htext, '[oUF_andawi:info]')
+
 		local lfd = fs(self.Health, "OVERLAY", cfg.symbol, 8, "", 1, 1, 1)
 		lfd:SetPoint("TOPLEFT", 30, -4)
-	    self:Tag(lfd, '[oUF_andawi:LFD]')	
+	    self:Tag(lfd, '[oUF_andawi:LFD]')
 
 		self.RaidIcon:SetSize(20, 20)
 	    self.RaidIcon:SetPoint("TOP", self.Health, 2, 7)
-		
+
 		if cfg.healcomm then  AddHealPredictionBar(self) end
-		
+
 		--Resurrect(self)
 		PhanxResurrect(self)
 		createAuraWatch(self)
@@ -595,7 +623,7 @@ local raid_heal = function(self, unit)
 			debuffs.PostCreateIcon = auraIcon
             debuffs.PostUpdateIcon = PostUpdateIcon
 		self.Debuffs = debuffs
-		
+
 		local tborder = CreateFrame("Frame", nil, self)
         tborder:SetPoint("TOPLEFT", self, "TOPLEFT")
         tborder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
@@ -604,7 +632,7 @@ local raid_heal = function(self, unit)
         tborder:SetFrameLevel(1)
         tborder:Hide()
         self.TargetBorder = tborder
-		
+
 		local fborder = CreateFrame("Frame", nil, self)
         fborder:SetPoint("TOPLEFT", self, "TOPLEFT")
         fborder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
@@ -613,16 +641,20 @@ local raid_heal = function(self, unit)
         fborder:SetFrameLevel(1)
         fborder:Hide()
         self.FocusHighlight = fborder
-	    
-		self:RegisterEvent('GROUP_ROSTER_UPDATE', RaidSizeSwitcher)
-		self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
---debug
---		self:RegisterEvent('PLAYER_TARGET_CHANGED', RaidSizeSwitcher)
---      
-		self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
 
-	
-	self:SetScale(cfg.raidScale) 
+		
+	self.WeakenedSoulHighlight = cfg.WeakenedSoulHighlight
+		
+		
+	self:RegisterEvent('GROUP_ROSTER_UPDATE', RaidSizeSwitcher)
+	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
+	--debug
+	--		self:RegisterEvent('PLAYER_TARGET_CHANGED', RaidSizeSwitcher)
+	--
+	self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
+
+
+	self:SetScale(cfg.raidScale)
 end
 
 
@@ -635,14 +667,14 @@ oUF:Factory(function(self)
 	    CompactRaidFrameManager:UnregisterAllEvents()
         CompactRaidFrameManager:HookScript("OnShow", function(s) s:Hide() end)
         CompactRaidFrameManager:Hide()
-    
+
         CompactRaidFrameContainer:UnregisterAllEvents()
         CompactRaidFrameContainer:HookScript("OnShow", function(s) s:Hide() end)
         CompactRaidFrameContainer:Hide()
-    end 
-	
+    end
+
 	if cfg.raid then
-	
+
 		self:SetActiveStyle'andawi - raid heal'
 
 		raidgrp1 = oUF:SpawnHeader(nil, nil, "raid,party,solo",
@@ -696,7 +728,7 @@ oUF:Factory(function(self)
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
 		'columnAnchorPoint', "TOP")
-		
+
 		raidgrp4 = oUF:SpawnHeader(nil, nil, "raid",
 		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
 		'showPlayer', true,
@@ -733,7 +765,7 @@ oUF:Factory(function(self)
 		'columnSpacing', 5,
 		'columnAnchorPoint', "TOP")
 
-		
+
 		raidgrp6 = oUF:SpawnHeader(nil, nil, "raid",
 		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
 		'showPlayer', true,
@@ -751,7 +783,7 @@ oUF:Factory(function(self)
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
 		'columnAnchorPoint', "TOP")
-		
+
 		raidgrp7 = oUF:SpawnHeader(nil, nil, "raid",
 		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
 		'showPlayer', true,
@@ -769,7 +801,7 @@ oUF:Factory(function(self)
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
 		'columnAnchorPoint', "TOP")
-		
+
 		raidgrp8 = oUF:SpawnHeader(nil, nil, "raid",
 		'oUF-initialConfigFunction', ([[self:SetWidth(%d) self:SetHeight(%d)]]):format(cfg.raid_width, cfg.raid_health_height+cfg.raid_power_height+1),
 		'showPlayer', true,
@@ -787,10 +819,10 @@ oUF:Factory(function(self)
 		'unitsPerColumn', 5,
 		'columnSpacing', 5,
 		'columnAnchorPoint', "TOP")
-		
-		
+
+
 		--else
-		raidgrp1:SetPoint("CENTER", UIParent, "CENTER", cfg.unit_positions.Raid.x, cfg.unit_positions.Raid.y)			
+		raidgrp1:SetPoint("CENTER", UIParent, "CENTER", cfg.unit_positions.Raid.x, cfg.unit_positions.Raid.y)
 		raidgrp2:SetPoint('TOP', raidgrp1, 'BOTTOM', 0, -5)
 		raidgrp3:SetPoint('TOP', raidgrp2, 'BOTTOM', 0, -5)
 		raidgrp4:SetPoint('TOP', raidgrp3, 'BOTTOM', 0, -5)
@@ -810,7 +842,7 @@ WatchDog:RegisterEvent('PLAYER_REGEN_ENABLED')
 --WatchDog:RegisterEvent("ADDON_LOADED")
 
 WatchDog:SetScript("OnEvent", function(self, event)
-	
+
 	--print("WatchDog")
 	if event=='ACTIVE_TALENT_GROUP_CHANGED' then
 		local id, name, description, icon, background, role = GetSpecializationInfo(GetSpecialization())
@@ -825,6 +857,6 @@ WatchDog:SetScript("OnEvent", function(self, event)
 		end
 	elseif event=='GROUP_ROSTER_UPDATE' then
 		print('WatchDog GROUP_ROSTER_UPDATE')
-	
+
 	end
 end)
