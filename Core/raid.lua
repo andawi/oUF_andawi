@@ -69,15 +69,6 @@ local RaidSizeSwitcher = function(self)
 		raidgrp4:SetAttribute("showRaid", false)
 		raidgrp5:SetAttribute("showRaid", false)
 
-<<<<<<< HEAD
-		--[[raidgrp1:SetScale(cfg.raidScale)
-		raidgrp2:SetScale(cfg.raidScale)
-		raidgrp3:SetScale(cfg.raidScale)
-		raidgrp4:SetScale(cfg.raidScale)
-		raidgrp5:SetScale(cfg.raidScale)]]
-
-=======
->>>>>>> origin/master
 	elseif difficulty == 4 or difficulty == 6  or difficulty == 7 then -- 25 player
 		raidgrp1:SetAttribute("showRaid", true)
 		raidgrp2:SetAttribute("showRaid", true)
@@ -152,8 +143,6 @@ local auraIcon = function(auras, button)
 end
 
 
-<<<<<<< HEAD
-=======
 local PostUpdateHealth = function (health, unit, min, max)
 
 	local disconnnected = not UnitIsConnected(unit)
@@ -164,11 +153,12 @@ local PostUpdateHealth = function (health, unit, min, max)
 		health:SetValue(max)
 
 		if(disconnnected) then
-			health:SetStatusBarColor(0,0,0,0.6)
+			health:SetStatusBarColor(0.8,0.8,0.8,0.8)
 		elseif(ghost) then
 			health:SetStatusBarColor(1,1,1,0.3)
 		elseif(dead) then
-			health:SetStatusBarColor(1,0,0,0.8)
+			health:SetValue(0)
+			--health:SetStatusBarColor(1,0,0,0.2)
 		end
 	else
 		health:SetValue(min)
@@ -182,7 +172,6 @@ local PostUpdateHealth = function (health, unit, min, max)
 end
 
 
->>>>>>> origin/master
 
 local PostUpdateIcon = function(icons, unit, icon, index, offset)
 	local name, _, _, _, dtype, duration, expirationTime, unitCaster = UnitAura(unit, index, icon.filter)
@@ -410,7 +399,7 @@ local raid_heal = function(self, unit)
 
     self.framebd = framebd(self, self)		--extra Frame Backdrop...
 
-    local h = createStatusbar(self, cfg.texture, nil, nil, nil, cfg.Color.Health.r, cfg.Color.Health.g, cfg.Color.Health.b, 1)
+    local h = createStatusbar(self, cfg.texMinimalist, nil, nil, nil, cfg.Color.Health.r, cfg.Color.Health.g, cfg.Color.Health.b, 1)
     h:SetPoint"TOP"
 	h:SetPoint"LEFT"
 	h:SetPoint"RIGHT"
@@ -426,7 +415,7 @@ local raid_heal = function(self, unit)
         h.colorReaction = true
 		hbg.multiplier = .2
 	else
-		hbg:SetVertexColor(.5, .5, .5, .15)
+		hbg:SetVertexColor(.8, .8, .8, .15)
     end
 
 	if cfg.Smooth then h.Smooth = true end
@@ -434,15 +423,9 @@ local raid_heal = function(self, unit)
 			
 	h.bg = hbg
     self.Health = h
-<<<<<<< HEAD
-
-	--h.PostUpdate = PostUpdateHealth
-
-=======
 
 	h.PostUpdate = PostUpdateHealth
 
->>>>>>> origin/master
 		oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.3, 0.3, 0.3}
 		self.Health.colorSmooth = true
 
@@ -608,6 +591,7 @@ local raid_heal = function(self, unit)
 		else
 		    self:Tag(name, '[oUF_andawi:color][veryshort:name]')
 		end
+		name:SetAlpha(0.8)
 
         local htext = fs(self.Health, "OVERLAY", cfg.font, cfg.fontsize, cfg.fontflag, 1, 1, 1)
         htext:SetPoint("RIGHT", self.Health, 0, -8)

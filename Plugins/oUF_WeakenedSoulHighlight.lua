@@ -61,59 +61,50 @@ local function Update(object, event, unit)
 	
 	if object.unit ~= unit  then return end
 	local role = UnitGroupRolesAssigned(unit)
-<<<<<<< HEAD
-	if role ~= "TANK" then 
-=======
 	local s = UnitThreatSituation(object.unit)
+	if not s then s = 1 end
 	
-	if role ~= "TANK" or s <= 1 then 
->>>>>>> origin/master
-		object.Health.colorSmooth = true
-		object.Health.colorClass = false
-		return 
-	end
-<<<<<<< HEAD
+	object.Health.colorSmooth = true
+	object.Health.colorClass = false
 	
-=======
+	if role == "TANK" and s > 1 then 
 		
->>>>>>> origin/master
-	local r, g, b, t
-	
-	local check  = CheckWeakenedDebuff(unit)
-	if check or UnitAura(unit, "Power Word: Shield") then 		-- no need to check if PW:S is still activethen		-- set healtbar color to class color if Weakened Soul Debuff is *NOT* available
-		object.Health.colorSmooth = true
-		object.Health.colorClass = false
-	else
-		object.Health.colorSmooth = false
-		object.Health.colorClass = true
-	end
-	
-	-- force color update on aura change
-	local r, g, b, t
-	if(object.Health.colorSmooth) then
-	
-		local min, max = UnitHealth(unit), UnitHealthMax(unit)
-		r, g, b = oUF.ColorGradient(min, max, unpack(object.Health.smoothGradient or oUF.colors.smooth))
-	elseif (object.Health.colorClass and UnitIsPlayer(unit)) then
-		local _, class = UnitClass(unit)
-		t = oUF.colors.class[class]
+		local r, g, b, t
 		
-	end
-	
-	if(t) then
-		r, g, b = t[1], t[2], t[3]
-	end
-	
-	if(b) then
-		object.Health:SetStatusBarColor(r, g, b, 0.9)
+		local check  = CheckWeakenedDebuff(unit)
+		if check or UnitAura(unit, "Power Word: Shield") then 		-- no need to check if PW:S is still activethen		-- set healtbar color to class color if Weakened Soul Debuff is *NOT* available
+			object.Health.colorSmooth = true
+			object.Health.colorClass = false
+		else
+			object.Health.colorSmooth = false
+			object.Health.colorClass = true
+		end
+		
+		-- force color update on aura change
+		local r, g, b, t
+		if(object.Health.colorSmooth) then
+		
+			local min, max = UnitHealth(unit), UnitHealthMax(unit)
+			r, g, b = oUF.ColorGradient(min, max, unpack(object.Health.smoothGradient or oUF.colors.smooth))
+		elseif (object.Health.colorClass and UnitIsPlayer(unit)) then
+			local _, class = UnitClass(unit)
+			t = oUF.colors.class[class]
+			
+		end
+		
+		if(t) then
+			r, g, b = t[1], t[2], t[3]
+		end
+		
+		if(b) then
+			object.Health:SetStatusBarColor(r, g, b, 0.9)
 
-		local bg = object.Health.bg
-		if(bg) then local mu = bg.multiplier or 1
-			bg:SetVertexColor(r * mu, g * mu, b * mu)
+			local bg = object.Health.bg
+			if(bg) then local mu = bg.multiplier or 1
+				bg:SetVertexColor(r * mu, g * mu, b * mu)
+			end
 		end
 	end
-	
-	
 end
 
 local function Enable(object)
@@ -128,11 +119,8 @@ local function Enable(object)
 	
 	-- make sure aura scanning is active for this object
 	object:RegisterEvent("UNIT_AURA", Update)
-<<<<<<< HEAD
-=======
 	object:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', Update)
 	object:RegisterEvent('UNIT_THREAT_LIST_UPDATE', Update)
->>>>>>> origin/master
 	object:RegisterEvent("PLAYER_ENTERING_WORLD", CheckSpec)
 	object:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 
@@ -142,11 +130,8 @@ end
 local function Disable(object)
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder or object.DebuffHighlight then
 		object:UnregisterEvent("UNIT_AURA", Update)
-<<<<<<< HEAD
-=======
 		object:UnregisterEvent('UNIT_THREAT_SITUATION_UPDATE', Update)
 		object:UnregisterEvent('UNIT_THREAT_LIST_UPDATE', Update)
->>>>>>> origin/master
 		object:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 	end
 end

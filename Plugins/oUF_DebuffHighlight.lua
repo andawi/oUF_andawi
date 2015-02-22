@@ -73,7 +73,7 @@ local function Update(object, event, unit)
 	local color = DebuffTypeColor[debuffType] 
 	if s and s > 1 then
 		r, g, b = GetThreatStatusColor(s)
-		object.framebd:SetBackdropBorderColor(r, g, b, 0.3)
+		object.framebd:SetBackdropBorderColor(r, g, b, 0.5)
 	elseif debuffType then	
 		object.framebd:SetBackdropBorderColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 1)	
 	else

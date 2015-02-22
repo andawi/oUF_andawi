@@ -8,7 +8,9 @@
 local textures = "Interface\\AddOns\\oUF_andawi\\media\\textures\\"
 local fonts = "Interface\\AddOns\\oUF_andawi\\media\\fonts\\"
 
+
 cfg.texture = textures.."texture"
+cfg.texMinimalist = "Interface\\AddOns\\SharedMedia\\Statusbar\\Minimalist"
 cfg.buttonTex = textures.."gloss"
 cfg.raidIcons = textures.."raidicons"
 cfg.arrow = textures.."Arrow"

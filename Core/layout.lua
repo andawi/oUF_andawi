@@ -28,12 +28,6 @@ local OnLeave = function(self)
 			end
 end
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> origin/master
 local Highlight = function(self)
     self.Highlight = self:CreateTexture(nil, 'HIGHLIGHT')
 	self.Highlight:SetAllPoints(self)
@@ -58,11 +52,7 @@ local FocusTarget = function(self)
     end
 end
 
-<<<<<<< HEAD
-local RaidSizeSwitcher = function(self)
-=======
 --[[local RaidSizeSwitcher = function(self)
->>>>>>> origin/master
 
 	if InCombatLockdown() then return end
 
@@ -147,9 +137,6 @@ local auraIcon = function(auras, button)
 
 end
 
-<<<<<<< HEAD
-
-=======
 local PostUpdateHealth = function (health, unit, min, max)
 
 	local disconnnected = not UnitIsConnected(unit)
@@ -160,11 +147,11 @@ local PostUpdateHealth = function (health, unit, min, max)
 		health:SetValue(max)
 
 		if(disconnnected) then
-			health:SetStatusBarColor(0,0,0,0.6)
+			health:SetStatusBarColor(0.8,0.8,0.8,0.8)
 		elseif(ghost) then
 			health:SetStatusBarColor(1,1,1,0.3)
 		elseif(dead) then
-			health:SetStatusBarColor(1,0,0,0.8)
+			health:SetStatusBarColor(1,0,0,0.5)
 		end
 	else
 		health:SetValue(min)
@@ -176,33 +163,11 @@ local PostUpdateHealth = function (health, unit, min, max)
 
 
 end
->>>>>>> origin/master
 
 
 local PostUpdateIcon = function(self, unit, icon, index, offset)
 	local name, _, _, _, dtype, duration, expirationTime, unitCaster = UnitAura(unit, index, icon.filter)
 
-<<<<<<< HEAD
-	--[[
-	local parent = self:GetParent()
-	print (WeakenedSoul)
-	if WeakenedSoul then
-		print("WeakenedSoul found")
-		if parent then 
-			parent.Health.colorClass = true 
-			parent.Health.colorSmooth = false
-		end
-	else
-		print("WeakenedSoul *NOT* found")
-		if parent then 
-			parent.Health.colorClass = false
-			parent.Health.colorSmooth = true
-		end
-		print("weakened soul debuff not found")
-	end
-	]]
-=======
->>>>>>> origin/master
 	
 	
 	local texture = icon.icon
@@ -481,7 +446,7 @@ local Shared = function(self, unit)
 
     self.framebd = framebd(self, self)		--extra Frame Backdrop...
 
-    local h = createStatusbar(self, cfg.texture, nil, nil, nil, cfg.Color.Health.r, cfg.Color.Health.g, cfg.Color.Health.b, 1)
+    local h = createStatusbar(self, cfg.texMinimalist, nil, nil, nil, cfg.Color.Health.r, cfg.Color.Health.g, cfg.Color.Health.b, 1)
     h:SetPoint"TOP"
 	h:SetPoint"LEFT"
 	h:SetPoint"RIGHT"
@@ -504,13 +469,9 @@ local Shared = function(self, unit)
 
 	h.bg = hbg
     self.Health = h
-<<<<<<< HEAD
-
-=======
 	h.PostUpdate = PostUpdateHealth
 	
 	
->>>>>>> origin/master
 	oUF.colors.smooth = {1, 0, 0, 0.75, 0, 0, 0.3, 0.3, 0.3}
 	self.Health.colorSmooth = true
 
