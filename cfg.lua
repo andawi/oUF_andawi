@@ -67,20 +67,20 @@ cfg.AltPowerBar_Height = 12
 -- Unit Frames Positions
 
  cfg.unit_positions = {
-             Player = { x= -300, y= 20},
-             Target = { x=	300, y= 20},
-       Targettarget = { x=  120, y=  -80},
+             Player = { x= -450, y= -150},
+             Target = { x=	450, y= -150},
+       Targettarget = { x=  120, y=  0},
               Focus = { x= 450, y=  -120},  
         Focustarget = { x=    0, y=  -65},
-                Pet = { x=	  -100, y=  -100},
-               Raid = { x=	 0, y=  -110},
+                Pet = { x=	  -100, y=  0},
+               Raid = { x=	 0, y=  -150},
 }
 
   -----------------------------
   -- Auras
   -----------------------------
 
-cfg.auras = true  -- disable all auras
+cfg.auras = false  -- disable all auras
 cfg.border = false
 cfg.onlyShowPlayer = true -- only show player debuffs on target
 cfg.disableCooldown = false -- hide Cooldown Spiral
